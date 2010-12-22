@@ -57,6 +57,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 # Object files for local .cc and .msg files
 OBJS = \
     $O/common/HorizonScheduler.o \
+    $O/edge/BurstDisassembler.o \
     $O/edge/MixedTimerBurstlengthBasedQueue.o \
     $O/edge/OffsetTable.o \
     $O/edge/PacketClassifier.o \
@@ -153,16 +154,6 @@ depend:
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	common/HorizonScheduler.h \
 	common/IBurstScheduler.h
-$O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
-	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
-	edge/PacketGenerator.h \
-	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
-	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
-	$(INET_PROJ)/src/base/INETDefs.h \
-	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
-	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/edge/MixedTimerBurstlengthBasedQueue.o: edge/MixedTimerBurstlengthBasedQueue.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
 	messages/Burst_m.h \
@@ -173,6 +164,31 @@ $O/edge/MixedTimerBurstlengthBasedQueue.o: edge/MixedTimerBurstlengthBasedQueue.
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h \
 	edge/MixedTimerBurstlengthBasedQueue.h
+$O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	edge/PacketGenerator.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
+$O/edge/BurstDisassembler.o: edge/BurstDisassembler.cc \
+	messages/IBurst.h \
+	messages/Burst.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	messages/BurstControlPacket_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	messages/Burst_m.h \
+	edge/BurstDisassembler.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	messages/BurstControlPacket.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/edge/PacketClassifier.o: edge/PacketClassifier.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
 	edge/PacketClassifier.h \
