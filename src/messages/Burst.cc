@@ -15,12 +15,12 @@
 
 #include "Burst.h"
 
-Burst::Burst(const char *name = NULL) : Burst_Base(name)
+Burst::Burst(const char *name = NULL) : IBurst(name)
 {
 	initialize();
 }
 
-Burst::Burst(const Burst& other) : Burst_Base(other)
+Burst::Burst(const Burst& other) : IBurst(other)
 {
 	initialize();
 }
@@ -60,7 +60,19 @@ int Burst::dropPacketsFromFront(int dropByteLength)
 	return dropedByteLength - dropByteLength;
 }
 
-int Burst::dropPacketsFromBack(int byteLength)
+int Burst::dropPacketsFromBack(int dropByteLength)
 {
+	int dropedByteLength = 0;
+	while (dropedByteLength <= dropByteLength)
+	{
+		if (packets->empty())
+			break;
 
+		cPacket *pkt = packets->back();
+		packets->remove(pkt);
+		dropedByteLength += pkt->getByteLength();
+		delete pkt;
+	}
+
+	return dropedByteLength - dropByteLength;
 }

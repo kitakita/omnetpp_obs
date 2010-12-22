@@ -13,35 +13,29 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef BURST_H_
-#define BURST_H_
+#ifndef IBURST_H_
+#define IBURST_H_
 
 #include <omnetpp.h>
-#include "IBurst.h"
+#include "Burst_m.h"
 
-class Burst : public IBurst
+class IBurst : public Burst_Base
 {
-  protected:
-	cPacketQueue *packets;
-
-	virtual void initialize();
-
   public:
-	Burst(const char *name);
-	Burst(const Burst& other);
-	virtual ~Burst();
-	Burst& operator=(const Burst& other) { Burst_Base::operator=(other); return *this; }
-	virtual Burst *dup() { return new Burst(*this); }
+	IBurst(const char *name=NULL) : Burst_Base(name) {}
+	IBurst(const IBurst& other) : Burst_Base(other) {}
+	IBurst& operator=(const IBurst& other) { Burst_Base::operator=(other); return *this; }
+	virtual IBurst *dup() { return new IBurst(*this); }
 
-	cPacketQueue *getPacketQueue() { return packets; }
+	virtual cPacketQueue *getPacketQueue();
 	virtual void setPacketQueue(cPacketQueue *queue);
 
 	virtual int dropPacketsFromFront(int byteLength);
 	virtual int dropPacketsFromBack(int byteLength);
 
-	int getNumPackets() { return packets->length(); }
-	int64 getBitLength() { return packets->getByteLength(); }
-	int64 getByteLength() { return packets->getBitLength(); }
+	virtual int getNumPackets();
+	virtual int64 getBitLength();
+	virtual int64 getByteLength();
 };
 
-#endif /* BURST_H_ */
+#endif /* IBURST_H_ */
