@@ -58,6 +58,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 OBJS = \
     $O/common/HorizonScheduler.o \
     $O/edge/MixedTimerBurstlengthBasedQueue.o \
+    $O/edge/OffsetTable.o \
     $O/edge/PacketClassifier.o \
     $O/edge/PacketGenerator.o \
     $O/edge/PacketSink.o \
@@ -189,6 +190,13 @@ $O/edge/PacketSink.o: edge/PacketSink.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
+$O/edge/OffsetTable.o: edge/OffsetTable.cc \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	edge/OffsetTable.h
 $O/messages/BurstControlPacket.o: messages/BurstControlPacket.cc \
 	messages/BurstControlPacket.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
