@@ -18,5 +18,4 @@
 //
 message Burst {
     @customize(true);  // see the generated C++ header for more info
-    int maxByteLength @unit("B");
 }

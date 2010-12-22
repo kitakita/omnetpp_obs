@@ -37,13 +37,6 @@ void Burst::initialize()
 	packets = NULL;
 }
 
-void Burst::setPacketQueue(cPacketQueue *queue)
-{
-	packets = queue;
-	if (packets->getByteLength() > getMaxByteLength())
-		dropPacketsFromBack(getMaxByteLength());
-}
-
 int Burst::dropPacketsFromFront(int dropByteLength)
 {
 	int dropedByteLength = 0;

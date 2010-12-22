@@ -20,7 +20,6 @@
  * <pre>
  * message Burst {
  *     @customize(true);  
- *     int maxByteLength @unit("B");
  * }
  * </pre>
  *
@@ -48,7 +47,6 @@
 class Burst_Base : public ::cMessage
 {
   protected:
-    int maxByteLength_var;
 
     // protected and unimplemented operator==(), to prevent accidental usage
     bool operator==(const Burst_Base&);
@@ -65,8 +63,6 @@ class Burst_Base : public ::cMessage
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual int getMaxByteLength() const;
-    virtual void setMaxByteLength(int maxByteLength_var);
 };
 
 

@@ -35,7 +35,7 @@ class Burst : public Burst_Base, public IBurst
 	virtual Burst *dup() { return new Burst(*this); }
 
 	cPacketQueue *getPacketQueue() { return packets; }
-	virtual void setPacketQueue(cPacketQueue *queue);
+	virtual void setPacketQueue(cPacketQueue *queue) { packets = queue; };
 
 	virtual int dropPacketsFromFront(int byteLength);
 	virtual int dropPacketsFromBack(int byteLength);
