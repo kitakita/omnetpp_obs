@@ -23,6 +23,7 @@ int PacketGenerator::counter;
 
 void PacketGenerator::initialize()
 {
+	myAddress = IPAddressResolver().resolve(par("myAddress"));
 	pktByteLength = par("packetLength");
 	numPackets = par("numPackets");
 	simtime_t startTime = par("startTime");
@@ -36,6 +37,7 @@ void PacketGenerator::initialize()
 	counter = 0;
 
 	numSent = 0;
+
 	WATCH(numSent);
 
 	if (destAddresses.empty())
@@ -53,7 +55,7 @@ void PacketGenerator::handleMessage(cMessage *msg)
 	{
 		sendPacket();
 
-		if (!numPackets || numSent<numPackets)
+		if (!numPackets || numSent < numPackets)
 			scheduleAt(simTime() + (double)par("packetInterval"), msg);
 		else
 			delete msg;
@@ -83,6 +85,7 @@ void PacketGenerator::sendPacket()
 
     IPvXAddress destAddr = chooseDestAddr();
     IPControlInfo *controlInfo = new IPControlInfo();
+    controlInfo->setSrcAddr(myAddress.get4());
     controlInfo->setDestAddr(destAddr.get4());
     pkt->setControlInfo(controlInfo);
 

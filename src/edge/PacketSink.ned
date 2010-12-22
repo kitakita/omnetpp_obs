@@ -13,32 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __OMNETPP_OBS_PACKETGENERATOR_H_
-#define __OMNETPP_OBS_PACKETGENERATOR_H_
+package omnetpp_obs.edge;
 
-#include <omnetpp.h>
-#include "IPvXAddress.h"
-
-/**
- * TODO - Generated class
- */
-class PacketGenerator : public cSimpleModule
+//
+// TODO auto-generated module
+//
+simple PacketSink
 {
-  protected:
-	IPvXAddress myAddress;
-    int pktByteLength;
-    int numPackets;
-    std::vector<IPvXAddress> destAddresses;
-
-    static int counter;
-
-    int numSent;
-
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-
-    virtual IPvXAddress chooseDestAddr();
-	virtual void sendPacket();
-};
-
-#endif
+    parameters:
+        string myAddress = default("");
+    	@display("i=block/sink");
+    gates:
+        input in[];
+}

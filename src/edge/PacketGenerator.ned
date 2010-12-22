@@ -21,10 +21,11 @@ package omnetpp_obs.edge;
 simple PacketGenerator
 {
     parameters:
+        string myAddress = default("");
+        volatile int packetLength @unit("B");
+        int numPackets = default(0);
         double startTime @unit("s") = default(1s);
         volatile double packetInterval @unit("s") = default(10ms);
-        int numPackets = default(0);
-        volatile int packetLength @unit("B");
         string destAddresses = default("");
     	@display("i=block/source");
     gates:

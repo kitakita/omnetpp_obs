@@ -58,6 +58,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 OBJS = \
     $O/common/HorizonScheduler.o \
     $O/edge/PacketGenerator.o \
+    $O/edge/PacketSink.o \
     $O/messages/Burst.o \
     $O/messages/BurstControlPacket.o \
     $O/messages/EnsureLengthBurst.o \
@@ -152,6 +153,16 @@ $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 $O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
 	edge/PacketGenerator.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
+$O/edge/PacketSink.o: edge/PacketSink.cc \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	edge/PacketSink.h \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
 	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
