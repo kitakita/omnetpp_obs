@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for omnetpp_obs
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -L../../inet/out/$(CONFIGNAME)/src -linet -KINET_PROJ=../../inet
+#  opp_makemake -f --deep -I../../inet/src/networklayer/ipv4 -I../../inet/src/networklayer/common -I../../inet/src/networklayer/rsvp_te -I../../inet/src/networklayer/icmpv6 -I../../inet/src/transport/tcp -I../../inet/src/base -I../../inet/src/networklayer/mpls -I../../inet/src/networklayer/ted -I../../inet/src/util/headerserializers -I../../inet/src/networklayer/contract -I../../inet/src/util -I../../inet/src/transport/contract -I../../inet/src/networklayer/ipv6 -I../../inet/src/transport/sctp -I../../inet/src/linklayer/mfcore -I../../inet/src/world -I../../inet/src/applications/pingapp -I../../inet/src/linklayer/contract -I../../inet/src/networklayer/arp -I../../inet/src/networklayer/ldp -I../../inet/src/transport/udp -L../../inet/out/$(CONFIGNAME)/src -linet -KINET_PROJ=../../inet
 #
 
 # Name of target to be created (-o option)
@@ -14,7 +14,33 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I. -Iedge
+INCLUDE_PATH = \
+    -I../../inet/src/networklayer/ipv4 \
+    -I../../inet/src/networklayer/common \
+    -I../../inet/src/networklayer/rsvp_te \
+    -I../../inet/src/networklayer/icmpv6 \
+    -I../../inet/src/transport/tcp \
+    -I../../inet/src/base \
+    -I../../inet/src/networklayer/mpls \
+    -I../../inet/src/networklayer/ted \
+    -I../../inet/src/util/headerserializers \
+    -I../../inet/src/networklayer/contract \
+    -I../../inet/src/util \
+    -I../../inet/src/transport/contract \
+    -I../../inet/src/networklayer/ipv6 \
+    -I../../inet/src/transport/sctp \
+    -I../../inet/src/linklayer/mfcore \
+    -I../../inet/src/world \
+    -I../../inet/src/applications/pingapp \
+    -I../../inet/src/linklayer/contract \
+    -I../../inet/src/networklayer/arp \
+    -I../../inet/src/networklayer/ldp \
+    -I../../inet/src/transport/udp \
+    -I. \
+    -Icommon \
+    -Icore \
+    -Iedge \
+    -Imessages
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -29,7 +55,7 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
-OBJS =
+OBJS = $O/common/HorizonScheduler.o
 
 # Message files
 MSGFILES =
@@ -97,13 +123,19 @@ clean:
 	-rm -rf $O
 	-rm -f omnetpp_obs omnetpp_obs.exe libomnetpp_obs.so libomnetpp_obs.a libomnetpp_obs.dll libomnetpp_obs.dylib
 	-rm -f ./*_m.cc ./*_m.h
+	-rm -f common/*_m.cc common/*_m.h
+	-rm -f core/*_m.cc core/*_m.h
 	-rm -f edge/*_m.cc edge/*_m.h
+	-rm -f messages/*_m.cc messages/*_m.h
 
 cleanall: clean
 	-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc edge/*.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc common/*.cc core/*.cc edge/*.cc messages/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
+	common/HorizonScheduler.h \
+	common/IBurstScheduler.h
 
