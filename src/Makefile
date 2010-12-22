@@ -14,7 +14,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I.
+INCLUDE_PATH = -I. -Iedge
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -97,12 +97,13 @@ clean:
 	-rm -rf $O
 	-rm -f omnetpp_obs omnetpp_obs.exe libomnetpp_obs.so libomnetpp_obs.a libomnetpp_obs.dll libomnetpp_obs.dylib
 	-rm -f ./*_m.cc ./*_m.h
+	-rm -f edge/*_m.cc edge/*_m.h
 
 cleanall: clean
 	-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc edge/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
