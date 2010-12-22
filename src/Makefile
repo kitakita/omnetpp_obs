@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for omnetpp_obs
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -I../../inet/src/networklayer/ipv4 -I../../inet/src/networklayer/common -I../../inet/src/networklayer/rsvp_te -I../../inet/src/networklayer/icmpv6 -I../../inet/src/transport/tcp -I../../inet/src/base -I../../inet/src/networklayer/mpls -I../../inet/src/networklayer/ted -I../../inet/src/util/headerserializers -I../../inet/src/networklayer/contract -I../../inet/src/util -I../../inet/src/transport/contract -I../../inet/src/networklayer/ipv6 -I../../inet/src/transport/sctp -I../../inet/src/linklayer/mfcore -I../../inet/src/world -I../../inet/src/applications/pingapp -I../../inet/src/linklayer/contract -I../../inet/src/networklayer/arp -I../../inet/src/networklayer/ldp -I../../inet/src/transport/udp -L../../inet/out/$(CONFIGNAME)/src -linet -KINET_PROJ=../../inet
+#  opp_makemake -f --deep -I../../inet/src/networklayer/ipv4 -I../../inet/src/networklayer/common -I../../inet/src/networklayer/rsvp_te -I../../inet/src/networklayer/icmpv6 -I../../inet/src/transport/tcp -I../../inet/src/networklayer/mpls -I../../inet/src/base -I../../inet/src/networklayer/ted -I../../inet/src/util/headerserializers -I../../inet/src/networklayer/contract -I../../inet/src/util -I../../inet/src/transport/contract -I../../inet/src/linklayer/mfcore -I../../inet/src/networklayer/ipv6 -I../../inet/src/transport/sctp -I../../inet/src/world -I../../inet/src/applications/pingapp -I../../inet/src/linklayer/contract -I../../inet/src/networklayer/arp -I../../inet/src/networklayer/ldp -I../../inet/src/transport/udp -L../../inet/out/$(CONFIGNAME)/src -linet -KINET_PROJ=../../inet
 #
 
 # Name of target to be created (-o option)
@@ -20,16 +20,16 @@ INCLUDE_PATH = \
     -I../../inet/src/networklayer/rsvp_te \
     -I../../inet/src/networklayer/icmpv6 \
     -I../../inet/src/transport/tcp \
-    -I../../inet/src/base \
     -I../../inet/src/networklayer/mpls \
+    -I../../inet/src/base \
     -I../../inet/src/networklayer/ted \
     -I../../inet/src/util/headerserializers \
     -I../../inet/src/networklayer/contract \
     -I../../inet/src/util \
     -I../../inet/src/transport/contract \
+    -I../../inet/src/linklayer/mfcore \
     -I../../inet/src/networklayer/ipv6 \
     -I../../inet/src/transport/sctp \
-    -I../../inet/src/linklayer/mfcore \
     -I../../inet/src/world \
     -I../../inet/src/applications/pingapp \
     -I../../inet/src/linklayer/contract \
@@ -55,10 +55,13 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
-OBJS = $O/common/HorizonScheduler.o
+OBJS = $O/common/HorizonScheduler.o $O/messages/BurstControlPacket.o $O/messages/Burst_m.o $O/messages/BurstControlPacket_m.o $O/messages/ConnectionEvent_m.o
 
 # Message files
-MSGFILES =
+MSGFILES = \
+    messages/Burst.msg \
+    messages/BurstControlPacket.msg \
+    messages/ConnectionEvent.msg
 
 # Other makefile variables (-K)
 INET_PROJ=../../inet
@@ -138,4 +141,17 @@ depend:
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	common/HorizonScheduler.h \
 	common/IBurstScheduler.h
+$O/messages/BurstControlPacket.o: messages/BurstControlPacket.cc \
+	messages/BurstControlPacket.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	messages/BurstControlPacket_m.h
+$O/messages/BurstControlPacket_m.o: messages/BurstControlPacket_m.cc \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	messages/BurstControlPacket_m.h
+$O/messages/ConnectionEvent_m.o: messages/ConnectionEvent_m.cc \
+	messages/ConnectionEvent_m.h
+$O/messages/Burst_m.o: messages/Burst_m.cc \
+	messages/Burst_m.h
 
