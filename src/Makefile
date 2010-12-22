@@ -57,6 +57,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 # Object files for local .cc and .msg files
 OBJS = \
     $O/common/HorizonScheduler.o \
+    $O/edge/PacketGenerator.o \
     $O/messages/Burst.o \
     $O/messages/BurstControlPacket.o \
     $O/messages/EnsureLengthBurst.o \
@@ -148,6 +149,16 @@ depend:
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	common/HorizonScheduler.h \
 	common/IBurstScheduler.h
+$O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	edge/PacketGenerator.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/messages/BurstControlPacket.o: messages/BurstControlPacket.cc \
 	messages/BurstControlPacket.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
