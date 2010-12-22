@@ -57,6 +57,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 # Object files for local .cc and .msg files
 OBJS = \
     $O/common/HorizonScheduler.o \
+    $O/edge/PacketClassifier.o \
     $O/edge/PacketGenerator.o \
     $O/edge/PacketSink.o \
     $O/messages/Burst.o \
@@ -158,6 +159,13 @@ $O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
+$O/edge/PacketClassifier.o: edge/PacketClassifier.cc \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	edge/PacketClassifier.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/edge/PacketSink.o: edge/PacketSink.cc \
