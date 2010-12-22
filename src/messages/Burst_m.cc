@@ -32,6 +32,7 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 Burst_Base::Burst_Base(const char *name, int kind) : cMessage(name,kind)
 {
+    this->maxByteLength_var = 0;
 }
 
 Burst_Base::Burst_Base(const Burst_Base& other) : cMessage()
@@ -48,17 +49,30 @@ Burst_Base& Burst_Base::operator=(const Burst_Base& other)
 {
     if (this==&other) return *this;
     cMessage::operator=(other);
+    this->maxByteLength_var = other.maxByteLength_var;
     return *this;
 }
 
 void Burst_Base::parsimPack(cCommBuffer *b)
 {
     cMessage::parsimPack(b);
+    doPacking(b,this->maxByteLength_var);
 }
 
 void Burst_Base::parsimUnpack(cCommBuffer *b)
 {
     cMessage::parsimUnpack(b);
+    doUnpacking(b,this->maxByteLength_var);
+}
+
+int Burst_Base::getMaxByteLength() const
+{
+    return maxByteLength_var;
+}
+
+void Burst_Base::setMaxByteLength(int maxByteLength_var)
+{
+    this->maxByteLength_var = maxByteLength_var;
 }
 
 class BurstDescriptor : public cClassDescriptor
@@ -109,7 +123,7 @@ const char *BurstDescriptor::getProperty(const char *propertyname) const
 int BurstDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 0+basedesc->getFieldCount(object) : 0;
+    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
 }
 
 unsigned int BurstDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -120,7 +134,10 @@ unsigned int BurstDescriptor::getFieldTypeFlags(void *object, int field) const
             return basedesc->getFieldTypeFlags(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    return 0;
+    static unsigned int fieldTypeFlags[] = {
+        FD_ISEDITABLE,
+    };
+    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
 }
 
 const char *BurstDescriptor::getFieldName(void *object, int field) const
@@ -131,12 +148,17 @@ const char *BurstDescriptor::getFieldName(void *object, int field) const
             return basedesc->getFieldName(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    return NULL;
+    static const char *fieldNames[] = {
+        "maxByteLength",
+    };
+    return (field>=0 && field<1) ? fieldNames[field] : NULL;
 }
 
 int BurstDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
+    int base = basedesc ? basedesc->getFieldCount(object) : 0;
+    if (fieldName[0]=='m' && strcmp(fieldName, "maxByteLength")==0) return base+0;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -148,7 +170,10 @@ const char *BurstDescriptor::getFieldTypeString(void *object, int field) const
             return basedesc->getFieldTypeString(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    return NULL;
+    static const char *fieldTypeStrings[] = {
+        "int",
+    };
+    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *BurstDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -160,6 +185,9 @@ const char *BurstDescriptor::getFieldProperty(void *object, int field, const cha
         field -= basedesc->getFieldCount(object);
     }
     switch (field) {
+        case 0:
+            if (!strcmp(propertyname,"unit")) return "B";
+            return NULL;
         default: return NULL;
     }
 }
@@ -188,6 +216,7 @@ std::string BurstDescriptor::getFieldAsString(void *object, int field, int i) co
     }
     Burst_Base *pp = (Burst_Base *)object; (void)pp;
     switch (field) {
+        case 0: return long2string(pp->getMaxByteLength());
         default: return "";
     }
 }
@@ -202,6 +231,7 @@ bool BurstDescriptor::setFieldAsString(void *object, int field, int i, const cha
     }
     Burst_Base *pp = (Burst_Base *)object; (void)pp;
     switch (field) {
+        case 0: pp->setMaxByteLength(string2long(value)); return true;
         default: return false;
     }
 }
@@ -214,7 +244,10 @@ const char *BurstDescriptor::getFieldStructName(void *object, int field) const
             return basedesc->getFieldStructName(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    return NULL;
+    static const char *fieldStructNames[] = {
+        NULL,
+    };
+    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
 }
 
 void *BurstDescriptor::getFieldStructPointer(void *object, int field, int i) const

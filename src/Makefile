@@ -55,7 +55,13 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
-OBJS = $O/common/HorizonScheduler.o $O/messages/BurstControlPacket.o $O/messages/Burst_m.o $O/messages/BurstControlPacket_m.o $O/messages/ConnectionEvent_m.o
+OBJS = \
+    $O/common/HorizonScheduler.o \
+    $O/messages/Burst.o \
+    $O/messages/BurstControlPacket.o \
+    $O/messages/Burst_m.o \
+    $O/messages/BurstControlPacket_m.o \
+    $O/messages/ConnectionEvent_m.o
 
 # Message files
 MSGFILES = \
@@ -146,6 +152,9 @@ $O/messages/BurstControlPacket.o: messages/BurstControlPacket.cc \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	messages/BurstControlPacket_m.h
+$O/messages/Burst.o: messages/Burst.cc \
+	messages/Burst_m.h \
+	messages/Burst.h
 $O/messages/BurstControlPacket_m.o: messages/BurstControlPacket_m.cc \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
