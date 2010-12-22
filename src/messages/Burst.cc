@@ -15,12 +15,12 @@
 
 #include "Burst.h"
 
-Burst::Burst(const char *name = NULL) : IBurst(name)
+Burst::Burst(const char *name = NULL) : Burst_Base(name)
 {
 	initialize();
 }
 
-Burst::Burst(const Burst& other) : IBurst(other)
+Burst::Burst(const Burst& other) : Burst_Base(other)
 {
 	initialize();
 }

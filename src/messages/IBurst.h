@@ -17,25 +17,21 @@
 #define IBURST_H_
 
 #include <omnetpp.h>
-#include "Burst_m.h"
 
-class IBurst : public Burst_Base
+class IBurst
 {
   public:
-	IBurst(const char *name=NULL) : Burst_Base(name) {}
-	IBurst(const IBurst& other) : Burst_Base(other) {}
-	IBurst& operator=(const IBurst& other) { Burst_Base::operator=(other); return *this; }
-	virtual IBurst *dup() { return new IBurst(*this); }
+	virtual ~IBurst() {};
 
-	virtual cPacketQueue *getPacketQueue();
-	virtual void setPacketQueue(cPacketQueue *queue);
+	virtual cPacketQueue *getPacketQueue() = 0;
+	virtual void setPacketQueue(cPacketQueue *queue) = 0;
 
-	virtual int dropPacketsFromFront(int byteLength);
-	virtual int dropPacketsFromBack(int byteLength);
+	virtual int dropPacketsFromFront(int byteLength) = 0;
+	virtual int dropPacketsFromBack(int byteLength) = 0;
 
-	virtual int getNumPackets();
-	virtual int64 getBitLength();
-	virtual int64 getByteLength();
+	virtual int getNumPackets() const = 0;
+	virtual int64 getBitLength() const = 0;
+	virtual int64 getByteLength() const = 0;
 };
 
 #endif /* IBURST_H_ */

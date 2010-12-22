@@ -17,9 +17,10 @@
 #define BURST_H_
 
 #include <omnetpp.h>
+#include "Burst_m.h"
 #include "IBurst.h"
 
-class Burst : public IBurst
+class Burst : public Burst_Base, public IBurst
 {
   protected:
 	cPacketQueue *packets;
@@ -39,9 +40,9 @@ class Burst : public IBurst
 	virtual int dropPacketsFromFront(int byteLength);
 	virtual int dropPacketsFromBack(int byteLength);
 
-	int getNumPackets() { return packets->length(); }
-	int64 getBitLength() { return packets->getByteLength(); }
-	int64 getByteLength() { return packets->getBitLength(); }
+	int getNumPackets() const { return packets->length(); }
+	int64 getBitLength() const { return packets->getByteLength(); }
+	int64 getByteLength() const { return packets->getBitLength(); }
 };
 
 #endif /* BURST_H_ */

@@ -59,7 +59,6 @@ OBJS = \
     $O/common/HorizonScheduler.o \
     $O/messages/Burst.o \
     $O/messages/BurstControlPacket.o \
-    $O/messages/IBurst.o \
     $O/messages/Burst_m.o \
     $O/messages/BurstControlPacket_m.o \
     $O/messages/ConnectionEvent_m.o
@@ -166,6 +165,5 @@ $O/messages/ConnectionEvent_m.o: messages/ConnectionEvent_m.cc \
 $O/messages/Burst_m.o: messages/Burst_m.cc \
 	messages/Burst_m.h
 $O/messages/IBurst.o: messages/IBurst.cc \
-	messages/Burst_m.h \
 	messages/IBurst.h
 
