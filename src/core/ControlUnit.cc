@@ -33,6 +33,7 @@ void ControlUnit::initialize()
 	simtime_t oeConvertDelay = par("oeConvertDelay");
 	processDelay = bcpProcessDelay + (oeConvertDelay * 2);
 	guardtime = SimTime::parse("0.00000000001");
+	waveConversion = par("waveConversion");
 
 	cModule *parent = getParentModule();
 	int gatesize = parent->gateSize("burstg$o");
@@ -82,7 +83,11 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 	int inPort = bcp->getBurstIngressPort();
 	int inChannel = bcp->getBurstIngressChannel();
 	int outPort = crt->getSendPort(bcp->getDestAddresss());
-	int outChannel = scd->schedule(outPort, bcp->getBurstArrivalTime(), bcp->getBurstlength());
+	int outChannel = -1;
+	if (waveConversion)
+		outChannel = scd->schedule(outPort, bcp->getBurstArrivalTime(), bcp->getBurstlength());
+	else
+		outChannel = scd->schedule(outPort, inChannel, bcp->getBurstArrivalTime(), bcp->getBurstlength());
 
 	if (outChannel < 0)
 	{

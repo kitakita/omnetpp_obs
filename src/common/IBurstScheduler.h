@@ -6,7 +6,8 @@
 class IBurstScheduler
 {
   public:
-	virtual int schedule(int outPort, simtime_t arrivalTime, simtime_t length) = 0;
+	virtual int schedule(int port, simtime_t arrivalTime, simtime_t length) = 0;
+	virtual int schedule(int port, int channel, simtime_t arrivalTime, simtime_t length) = 0;
 };
 
 #endif /* IBURSTSCHEDULER_H_ */

@@ -106,7 +106,7 @@ void HorizonScheduler::updateDisplayString()
 
 int HorizonScheduler::schedule(int port, simtime_t arrivalTime, simtime_t length)
 {
-	Enter_Method("Schedule at %f (length %f [s]) to port %d (channel changeable).", arrivalTime.dbl(), length.dbl(), port);
+	Enter_Method("Schedule at %f (length %f [s]) to port %d (wave conversion enable).", arrivalTime.dbl(), length.dbl(), port);
 
 	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
 	   << "Burst Arrival Time: " << arrivalTime << " Burstlength: " << length << endl
@@ -132,7 +132,7 @@ int HorizonScheduler::schedule(int port, simtime_t arrivalTime, simtime_t length
 
 int HorizonScheduler::schedule(int port, int channel, simtime_t arrivalTime, simtime_t length)
 {
-	Enter_Method("Schedule at %f (length %f [s]) to port %d (channel fixed).", arrivalTime.dbl(), length.dbl(), port);
+	Enter_Method("Schedule at %f (length %f [s]) to port %d (wave conversion disable).", arrivalTime.dbl(), length.dbl(), port);
 
 	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
 	   << "Burst Arrival Time: " << arrivalTime << " Burstlength: " << length << endl

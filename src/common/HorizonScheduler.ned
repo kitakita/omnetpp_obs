@@ -20,5 +20,5 @@ package omnetpp_obs.common;
 //
 simple HorizonScheduler like BurstScheduler
 {
-    @display("i=block/table2");
+	@display("i=block/table2");
 }

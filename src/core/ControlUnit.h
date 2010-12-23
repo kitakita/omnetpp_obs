@@ -34,6 +34,7 @@ class ControlUnit : public cSimpleModule
 	OpticalSwitchFabric *osf;
 	WDMTable *wdm;
 
+	bool waveConversion;
 	simtime_t processDelay;
 	simtime_t guardtime;
 

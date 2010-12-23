@@ -21,6 +21,7 @@ package omnetpp_obs.core;
 simple ControlUnit
 {
     parameters:
+        bool waveConversion = default(true);
         double bcpProcessDelay @unit("s");
         double oeConvertDelay @unit("s");
     	@display("i=block/cogwheel");
