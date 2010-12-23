@@ -18,7 +18,7 @@ package omnetpp_obs.edge;
 //
 // TODO auto-generated module
 //
-simple TimeSlicedDispatcher
+simple TimeSlicedDispatcher like BurstDispatcher
 {
     parameters:
         double timeslot @unit("s");
