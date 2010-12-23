@@ -21,7 +21,7 @@ Define_Module(AnsyncSlotTable);
 
 void AnsyncSlotTable::initialize()
 {
-	const char *destAddrs = par("offsetTableFile");
+	const char *destAddrs = par("ansyncSlotTableFile");
 
 	std::ifstream ifs(destAddrs);
 	std::string line;

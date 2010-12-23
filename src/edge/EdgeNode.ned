@@ -60,15 +60,18 @@ module EdgeNode
         disassembler: BurstDisassembler {
             parameters:
                 myAddress = myAddress;
-            	@display("p=250,120");
+                @display("p=250,120");
         }
         sink: PacketSink {
             parameters:
                 myAddress = myAddress;
-            	@display("p=50,120");
+                @display("p=50,120");
         }
         scheduler: <schedulerType> like BurstScheduler {
             @display("p=250,50");
+        }
+        ansyncSlotTable: AnsyncSlotTable {
+            @display("p=135,50");
         }
     connections:
         generator.out --> classifier.in;

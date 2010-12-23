@@ -63,11 +63,15 @@ void AnsyncTimeSlicedDispatcher::sendBurst(cMessage *msg)
 	simtime_t nextTimeslot = timeslot * ((int)(burstSendingTime / timeslot) + 1) + slotoffset;
 	simtime_t burstlength = bst->getBitLength() / datarate;
 	simtime_t ensurelength = ast->getEnsureBitLength(dest) / datarate;
+	if (ensurelength > burstlength)
+		ensurelength = burstlength;
 
 	ev << "Dispatcher send burst." << endl
 	   << "bcpoffset: " << offset << " | "
+	   << "slotoffset: " << slotoffset << " | "
 	   << "sendingtime: " << burstSendingTime << " | "
 	   << "burstlength" << burstlength << " | "
+	   << "ensurelength" << ensurelength << " | "
 	   << "nexttimeslot: " << nextTimeslot << " | " << endl;
 
 	if (burstlength > timeslot)

@@ -22,9 +22,6 @@ simple AnsyncTimeSlicedDispatcher like BurstDispatcher
 {
     parameters:
         double timeslot @unit("s");
-        int frontBurstlength @unit("B");
-        int ensureBurstlength @unit("B");
-        int backBurstlength @unit("B");
         @display("i=block/classifier2");
     gates:
         input in[];

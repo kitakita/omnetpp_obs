@@ -32,9 +32,6 @@ class AnsyncTimeSlicedDispatcher : public cSimpleModule
 	AnsyncSlotTable *ast;
 	simtime_t timeslot;
 	double datarate;
-	int frontByteLength;
-	int ensureByteLength;
-	int backByteLength;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
