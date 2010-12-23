@@ -33,15 +33,6 @@ void ControlUnit::initialize()
 	simtime_t oeConvertDelay = par("oeConvertDelay");
 	processDelay = bcpProcessDelay + (oeConvertDelay * 2);
 	guardtime = SimTime::parse("0.00000000001");
-	waveConversion = par("waveConversion");
-
-	cModule *parent = getParentModule();
-	int gatesize = parent->gateSize("burstg$o");
-	for (int i = 0; i < gatesize; i++)
-	{
-		connectMsgTable.push_back(new ConnectionEvent());
-		disconnectMsgTable.push_back(new ConnectionEvent());
-	}
 
 	failedCounter = 0;
 
@@ -56,16 +47,6 @@ void ControlUnit::handleMessage(cMessage *msg)
 		handleBurstControlPacket(msg);
 }
 
-void ControlUnit::finish()
-{
-	EventTable::iterator it = connectMsgTable.begin();
-	while (it != connectMsgTable.end())
-		cancelAndDelete (*it++);
-	it = disconnectMsgTable.begin();
-	while (it != connectMsgTable.end())
-		cancelAndDelete (*it++);
-}
-
 void ControlUnit::handleSelfEvent(cMessage *msg)
 {
 	ConnectionEvent *cue = check_and_cast<ConnectionEvent *>(msg);
@@ -74,6 +55,8 @@ void ControlUnit::handleSelfEvent(cMessage *msg)
 		osf->connect(cue->getIn(), cue->getOut());
 	else
 		osf->disconnect(cue->getIn());
+
+	delete msg;
 }
 
 void ControlUnit::handleBurstControlPacket(cMessage *msg)
@@ -83,11 +66,8 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 	int inPort = bcp->getBurstIngressPort();
 	int inChannel = bcp->getBurstIngressChannel();
 	int outPort = crt->getSendPort(bcp->getDestAddresss());
-	int outChannel = -1;
-	if (waveConversion)
-		outChannel = scd->schedule(outPort, bcp->getBurstArrivalTime(), bcp->getBurstlength());
-	else
-		outChannel = scd->schedule(outPort, inChannel, bcp->getBurstArrivalTime(), bcp->getBurstlength());
+	ScheduleResult res = scd->schedule(outPort, bcp);
+	int outChannel = res.channel;
 
 	if (outChannel < 0)
 	{
@@ -104,16 +84,10 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 		int inGateIndex = wdm->getGateIndex(inPort, inChannel);
 		int outGateIndex = wdm->getGateIndex(inPort, inChannel);
 
-		ConnectionEvent *connect = connectMsgTable.at(inGateIndex);
-		connect->setKind(0);
+		ConnectionEvent *connect = new ConnectionEvent("ConnectionEvent");
 		connect->setIn(inGateIndex);
 		connect->setOut(outGateIndex);
 		scheduleAt(bcp->getBurstArrivalTime() - guardtime, connect);
-
-		ConnectionEvent *disconnect = disconnectMsgTable.at(inGateIndex);
-		disconnect->setKind(1);
-		disconnect->setIn(inGateIndex);
-		scheduleAt(bcp->getBurstArrivalTime() + bcp->getBurstlength() - guardtime, disconnect);
 
 		ev << "Burst sending schedule at " << bcp->getBurstArrivalTime() << " to " << bcp->getBurstArrivalTime() + bcp->getBurstlength() << endl;
 

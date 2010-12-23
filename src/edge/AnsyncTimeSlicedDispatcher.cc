@@ -83,21 +83,26 @@ void AnsyncTimeSlicedDispatcher::sendBurst(cMessage *msg)
 	else if ((nowTimeslot + ensurelength) < (burstSendingTime + burstlength))
 		burstSendingTime = nextTimeslot;
 
-    int channel;
-    while ((channel = bsc->schedule(0, burstSendingTime, burstlength)) < 0)
+	bcp->setSrcAddress(src);
+	bcp->setDestAddresss(dest);
+	bcp->setBurstArrivalTime(burstSendingTime);
+	bcp->setBurstlength(burstlength);
+	bcp->setBurstIngressPort(0);
+	bcp->setBurstIngressChannel(-1);
+
+    ScheduleResult res;
+    while ((res = bsc->schedule(0, bcp)).channel < 0)
     {
     	if (burstSendingTime < nextTimeslot)
     		burstSendingTime = nextTimeslot;
     	else
     		burstSendingTime += timeslot;
+
+    	bcp->setBurstArrivalTime(burstSendingTime);
     }
 
-    bcp->setSrcAddress(src);
-    bcp->setDestAddresss(dest);
-    bcp->setBurstArrivalTime(burstSendingTime);
-    bcp->setBurstlength(burstlength);
-    bcp->setBurstIngressPort(0);
-    bcp->setBurstIngressChannel(channel);
+    bcp->setBurstIngressChannel(res.channel);
+
 
     if (bst->getBitLength() > ast->getEnsureBitLength(dest))
     	bcp->setBurstDropableLength(bst->getBitLength() - ast->getEnsureBitLength(dest));
@@ -105,7 +110,7 @@ void AnsyncTimeSlicedDispatcher::sendBurst(cMessage *msg)
     	bcp->setBurstDropableLength(0);
 
     send(bcp, "bcpg$o");
-    sendDelayed(bst, burstSendingTime - simTime(), "burstg$o", channel);
+    sendDelayed(bst, burstSendingTime - simTime(), "burstg$o", res.channel);
 }
 
 void AnsyncTimeSlicedDispatcher::receiveBurst(cMessage *msg)
