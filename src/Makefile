@@ -57,6 +57,9 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 # Object files for local .cc and .msg files
 OBJS = \
     $O/common/HorizonScheduler.o \
+    $O/core/ControlUnit.o \
+    $O/core/CoreRoutingTable.o \
+    $O/core/OpticalSwitchFabric.o \
     $O/edge/AnsyncSlotTable.o \
     $O/edge/AnsyncTimeSlicedDispatcher.o \
     $O/edge/BurstDisassembler.o \
@@ -157,6 +160,29 @@ depend:
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	common/HorizonScheduler.h \
 	common/IBurstScheduler.h
+$O/core/OpticalSwitchFabric.o: core/OpticalSwitchFabric.cc \
+	core/OpticalSwitchFabric.h
+$O/core/ControlUnit.o: core/ControlUnit.cc \
+	messages/ConnectionEvent_m.h \
+	core/CoreRoutingTable.h \
+	core/ControlUnit.h \
+	common/IBurstScheduler.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	core/OpticalSwitchFabricAccess.h \
+	core/OpticalSwitchFabric.h \
+	messages/BurstControlPacket_m.h \
+	messages/BurstControlPacket.h \
+	common/BurstSchedulerAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	core/CoreRoutingTableAccess.h
+$O/core/CoreRoutingTable.o: core/CoreRoutingTable.cc \
+	core/CoreRoutingTable.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h
 $O/edge/AsyncSlotTable.o: edge/AsyncSlotTable.cc \
 	edge/AsyncSlotTable.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \

@@ -1,5 +1,5 @@
 # Partial Tkenv config file -- see $HOME/.tkenvrc as well
-inspector "TwoEdges" "TwoEdges" "2" "381x338+-423+685:normal"
 inspector "TwoEdges.edge0" "EdgeNode" "2" "466x340+-1380+690:normal"
+inspector "TwoEdges" "TwoEdges" "2" "381x338+-423+685:normal"
 inspector "TwoEdges.edge1" "EdgeNode" "2" "453x340+-896+687:normal"
 

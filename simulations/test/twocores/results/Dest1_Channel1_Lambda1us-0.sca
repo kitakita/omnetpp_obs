@@ -1,0 +1,33 @@
+version 2
+run Dest1_Channel1_Lambda1us-0-20101223-17:23:44-5896
+attr configname Dest1_Channel1_Lambda1us
+attr datetime 20101223-17:23:44
+attr experiment Dest1_Channel1_Lambda1us
+attr inifile C:/work/home/OMNeT++Projects/omnetpp_obs/simulations/test/twocores/omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network Twocores
+attr processid 5896
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar Twocores.edge0.disassembler 	numBursts 	0
+scalar Twocores.edge0.disassembler 	numBits 	0
+scalar Twocores.edge0.disassembler 	packetsPreBurst 	0
+scalar Twocores.edge0.disassembler 	burstsPerSec 	0
+scalar Twocores.edge0.sink 	numPackets 	0
+scalar Twocores.edge0.sink 	numBits 	0
+scalar Twocores.edge0.sink 	throughput 	0
+scalar Twocores.edge0.sink 	packetsPerSec 	0
+scalar Twocores.edge1.disassembler 	numBursts 	21
+scalar Twocores.edge1.disassembler 	numBits 	100000000
+scalar Twocores.edge1.disassembler 	packetsPreBurst 	476.19047619048
+scalar Twocores.edge1.disassembler 	burstsPerSec 	20.771513353116
+scalar Twocores.edge1.sink 	numPackets 	10000
+scalar Twocores.edge1.sink 	numBits 	100000000
+scalar Twocores.edge1.sink 	throughput 	98911968.34817
+scalar Twocores.edge1.sink 	packetsPerSec 	9891.196834817
