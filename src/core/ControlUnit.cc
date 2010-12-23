@@ -14,6 +14,7 @@
 // 
 
 #include "ControlUnit.h"
+#include "Burst.h"
 #include "BurstControlPacket.h"
 #include "CoreRoutingTableAccess.h"
 #include "BurstSchedulerAccess.h"
@@ -43,8 +44,12 @@ void ControlUnit::handleMessage(cMessage *msg)
 {
 	if (msg->isSelfMessage())
 		handleSelfEvent(msg);
-	else
+	else if (dynamic_cast<BurstControlPacket *>(msg) != NULL)
 		handleBurstControlPacket(msg);
+	else if (dynamic_cast<ConnectionEvent *>(msg) != NULL)
+		handleSelfEvent(msg);
+	else
+		opp_error("ControlUnit receive unknown message.");
 }
 
 void ControlUnit::handleSelfEvent(cMessage *msg)
@@ -65,7 +70,6 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 
 	int inPort = bcp->getBurstIngressPort();
 	int inChannel = bcp->getBurstIngressChannel();
-	std::string str = bcp->getDestAddress().str();
 	int outPort = crt->getSendPort(bcp->getDestAddress());
 	ScheduleResult res = scd->schedule(outPort, bcp);
 	int outChannel = res.channel;

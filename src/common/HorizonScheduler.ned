@@ -21,7 +21,7 @@ package omnetpp_obs.common;
 simple HorizonScheduler like BurstScheduler
 {
     parameters:
-        bool droppable = default(true);
+        bool droppable = default(false);
         bool waveConversion = default(true);
         double datarate @unit("bps") = default(10Gbps);
 		@display("i=block/table2");

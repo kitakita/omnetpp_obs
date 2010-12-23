@@ -1,0 +1,3 @@
+# Partial Tkenv config file -- see $HOME/.tkenvrc as well
+inspector "Syncnet" "Syncnet" "2" "565x340+-604+690:normal"
+

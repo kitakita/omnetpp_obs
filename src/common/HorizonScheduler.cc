@@ -16,6 +16,7 @@
 #include "HorizonScheduler.h"
 #include "BurstControlPacket.h"
 #include "Burst.h"
+#include "ConnectionEvent_m.h"
 
 Define_Module(HorizonScheduler);
 
@@ -166,12 +167,19 @@ ScheduleResult HorizonScheduler::schedule(int port, cMessage *msg)
 	{
 		int droppedByte = res.offset.dbl() * sc->getDatarate();
 		ev << "Packet dropped in " << droppedByte << " byte." << endl;
-		sc->getBurst()->dropPacketsFromBack(droppedByte);
+		if (dynamic_cast<Burst *>(bcp->getBurst()) != NULL)
+		{
+			Burst *bst = check_and_cast<Burst *>(sc->getBurst());
+			bst->dropPacketsFromBack(droppedByte);
+		}
 	}
 
 	sc->setTime(bcp->getBurstArrivalTime() + bcp->getBurstlength());
-	cMessage *message = bcp->getBurst();
-	Burst *bst = check_and_cast<Burst *>(message);
+
+	if (dynamic_cast<ConnectionEvent *>(bcp->getBurst()) != NULL)
+		return res;
+
+	Burst *bst = check_and_cast<Burst *>(bcp->getBurst());
 	sc->setBurst(bst);
 
 	ev << endl << "   after";

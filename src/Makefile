@@ -161,6 +161,7 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	messages/Burst_m.h \
+	messages/ConnectionEvent_m.h \
 	messages/IBurst.h \
 	common/HorizonScheduler.h \
 	common/IBurstScheduler.h \
@@ -182,13 +183,16 @@ $O/core/OpticalSwitchFabric.o: core/OpticalSwitchFabric.cc \
 $O/core/ControlUnit.o: core/ControlUnit.cc \
 	messages/ConnectionEvent_m.h \
 	core/CoreRoutingTable.h \
+	messages/IBurst.h \
 	core/ControlUnit.h \
+	messages/Burst.h \
 	common/IBurstScheduler.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	core/OpticalSwitchFabricAccess.h \
 	core/OpticalSwitchFabric.h \
 	common/WDMTable.h \
 	messages/BurstControlPacket_m.h \
+	messages/Burst_m.h \
 	messages/BurstControlPacket.h \
 	common/BurstSchedulerAccess.h \
 	common/WDMTableAccess.h \
@@ -197,13 +201,6 @@ $O/core/ControlUnit.o: core/ControlUnit.cc \
 	core/CoreRoutingTableAccess.h
 $O/core/CoreRoutingTable.o: core/CoreRoutingTable.cc \
 	core/CoreRoutingTable.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
-	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
-	$(INET_PROJ)/src/base/INETDefs.h \
-	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddress.h
-$O/edge/AsyncSlotTable.o: edge/AsyncSlotTable.cc \
-	edge/AsyncSlotTable.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
 	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
@@ -332,6 +329,4 @@ $O/messages/EnsureLengthBurst.o: messages/EnsureLengthBurst.cc \
 	messages/EnsureLengthBurst.h
 $O/messages/Burst_m.o: messages/Burst_m.cc \
 	messages/Burst_m.h
-$O/messages/IBurst.o: messages/IBurst.cc \
-	messages/IBurst.h
 
