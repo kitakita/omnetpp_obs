@@ -18,30 +18,28 @@
 
 #include <omnetpp.h>
 #include "IBurstScheduler.h"
-
-struct OffsetAndChannel
-{
-    simtime_t offset;
-    int channel;
-};
+#include "Schedule.h"
 
 class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 {
   protected:
-	typedef std::vector<simtime_t> HorizonSchedules;
-	typedef std::vector<HorizonSchedules> ScheduleTables;
+	bool droppable;
+	bool waveConversion;
+
+	typedef std::vector<Schedule *> ScheduleTable;
+	typedef std::vector<ScheduleTable> ScheduleTables;
 	ScheduleTables scheduleTables;
 
 	virtual void initialize();
 	virtual void handleMessage(cMessage *msg);
+	virtual void finish();
 
-	virtual OffsetAndChannel getMinFrontOffsetAndChannel(int port, simtime_t arrivalTime);
 	virtual void printSchedule(int outPort);
 	virtual void updateDisplayString();
+	virtual ScheduleResult getScheduleResult(int port, simtime_t arrivalTime);
 
   public:
-	virtual int schedule(int port, simtime_t arrivalTime, simtime_t length);
-	virtual int schedule(int port, int channel, simtime_t arrivalTime, simtime_t length);
+	virtual ScheduleResult schedule(int port, cMessage *msg);
 };
 
 #endif

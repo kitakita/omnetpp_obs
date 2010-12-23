@@ -20,5 +20,5 @@ package omnetpp_obs.common;
 //
 moduleinterface BurstScheduler
 {
-    @display("i=block/app");
+	@display("i=block/app");
 }

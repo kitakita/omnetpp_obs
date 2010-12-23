@@ -13,15 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package omnetpp_obs.common;
+#include "Schedule.h"
 
-//
-// TODO auto-generated module
-//
-simple HorizonScheduler like BurstScheduler
+Schedule::Schedule(double rate)
 {
-    parameters:
-        bool dropable = default(true);
-        bool waveConversion = default(true);
-		@display("i=block/table2");
+	time = 0;
+	bst = NULL;
+	droppableByteLength = 0;
+	datarate = rate;
+}
+
+Schedule::~Schedule() {
+	bst = NULL;
 }

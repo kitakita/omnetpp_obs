@@ -14,25 +14,32 @@
 // 
 
 #include "HorizonScheduler.h"
+#include "BurstControlPacket.h"
+#include "Burst.h"
 
 Define_Module(HorizonScheduler);
 
 void HorizonScheduler::initialize()
 {
+	droppable = par("droppable");
+	waveConversion = par("waveConversion");
+
 	cModule *parent = getParentModule();
 	int gatesize = parent->gateSize("burstg$o");
 
 	for (int i = 0, prev = -1; i < gatesize; i++)
 	{
 		cGate *g = parent->gate("burstg$o", i)->getNextGate();
+		cDatarateChannel *c = check_and_cast<cDatarateChannel *>(g->getChannel());
+		double datarate = c->getDatarate();
 		int id = g->getOwnerModule()->getId();
 		if (id != prev)
 		{
 			prev = id;
-			HorizonSchedules schedule;
-			scheduleTables.push_back(schedule);
+			ScheduleTable table;
+			scheduleTables.push_back(table);
 		}
-		scheduleTables.back().push_back(0);
+		scheduleTables.back().push_back(new Schedule(datarate));
 	}
 
 	updateDisplayString();
@@ -43,43 +50,19 @@ void HorizonScheduler::handleMessage(cMessage *msg)
 	opp_error("%s cannot receive any messages (receive: %s).", getFullName(), msg);
 }
 
-OffsetAndChannel HorizonScheduler::getMinFrontOffsetAndChannel(int port, simtime_t arrivalTime)
+void HorizonScheduler::finish()
 {
-	OffsetAndChannel oac;
-	oac.offset = arrivalTime - scheduleTables.at(port).at(0);
-	oac.channel = 0;
-
-	int size = scheduleTables.at(port).size();
-	for (int i = 1; i < size; i++)
-	{
-		simtime_t offset = arrivalTime - scheduleTables.at(port).at(i);
-		if (offset > 0)
-		{
-			if (((oac.offset > 0) && (oac.offset > offset)) || (oac.offset <= 0))
-			{
-				oac.offset = offset;
-				oac.channel = i;
-			}
-		}
-		else
-		{
-			if ((oac.offset <= 0) && (oac.offset < offset))
-			{
-				oac.offset = offset;
-				oac.channel = i;
-			}
-		}
-	}
-	return oac;
+	for (unsigned int i = 0; i < scheduleTables.size(); i++)
+		for (unsigned int j = 0; j < scheduleTables.at(i).size(); j++)
+			delete scheduleTables[i][j];
 }
 
 void HorizonScheduler::printSchedule(int port)
 {
-	int size = scheduleTables.at(port).size();
-	for (int i = 0; i < size; i++)
+	for (unsigned int i = 0; i < scheduleTables.at(port).size(); i++)
 	{
 		char schedule[32];
-		sprintf(schedule, "%16.12f", scheduleTables.at(port).at(i).dbl());
+		sprintf(schedule, "%16.12f", scheduleTables.at(port).at(i)->getTime().dbl());
 		ev << " | " << schedule;
 	}
 }
@@ -90,7 +73,7 @@ void HorizonScheduler::updateDisplayString()
         return;
 
     char tag[128];
-    sprintf(tag, "%d ports\ntable:", scheduleTables.size());
+    sprintf(tag, "%d ports\nsize:", scheduleTables.size());
 
     ScheduleTables::iterator stit = scheduleTables.begin();
     while (stit != scheduleTables.end())
@@ -104,54 +87,95 @@ void HorizonScheduler::updateDisplayString()
     getDisplayString().setTagArg("t", 0, tag);
 }
 
-int HorizonScheduler::schedule(int port, simtime_t arrivalTime, simtime_t length)
+ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTime)
 {
-	Enter_Method("Schedule at %f (length %f [s]) to port %d (wave conversion enable).", arrivalTime.dbl(), length.dbl(), port);
+	Schedule *sc;
+	ScheduleResult st;
 
-	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
-	   << "Burst Arrival Time: " << arrivalTime << " Burstlength: " << length << endl
-	   << "before";
-	printSchedule(port);
-	ev << endl << "   after";
-
-	OffsetAndChannel oac = getMinFrontOffsetAndChannel(port, arrivalTime);
-
-	if (oac.offset < 0)
+	int i = 0;
+	int size = scheduleTables.at(port).size();
+	do
 	{
-		ev << " | failed." << endl;
-		return -1;
-	}
+		sc = scheduleTables.at(port).at(i);
+		st.offset = arrivalTime - sc->getTime();
+		st.channel = 0;
+		st.dropped = false;
 
-	scheduleTables.at(port).at(oac.channel) += (oac.offset + length);
+		if (droppable)
+		{
+			if (!((st.offset < 0) && (st.offset + sc->getDroppableTimelength() < 0)))
+				st.channel = -1;
+		}
 
-	printSchedule(port);
-	ev << endl;
+		simtime_t offset = arrivalTime - sc->getTime();
+		if (offset > 0)
+		{
+			if (((st.offset > 0) && (st.offset > offset)) || (st.offset < 0))
+			{
+				st.offset = offset;
+				st.channel = i;
+			}
+		}
+		else
+		{
+			if (droppable)
+			{
+				if ((st.offset < offset) && (offset + sc->getDroppableTimelength() < 0))
+				{
+					st.offset = offset;
+					st.channel = i;
+				}
+			}
+			else
+			{
+				if ((st.offset < 0) && (st.offset < offset))
+				{
+					st.offset = offset;
+					st.channel = i;
+				}
+			}
+		}
 
-	return oac.channel;
+		i++;
+	} while (i < size);
+
+	return st;
 }
 
-int HorizonScheduler::schedule(int port, int channel, simtime_t arrivalTime, simtime_t length)
+ScheduleResult HorizonScheduler::schedule(int port, cMessage *msg)
 {
-	Enter_Method("Schedule at %f (length %f [s]) to port %d (wave conversion disable).", arrivalTime.dbl(), length.dbl(), port);
+	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
+
+	Enter_Method("Schedule %s to port %d (wave conversion %s).", bcp->getName(), port, waveConversion ? "enable" : "disable");
 
 	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
-	   << "Burst Arrival Time: " << arrivalTime << " Burstlength: " << length << endl
+	   << "Burst Arrival Time: " << bcp->getBurstArrivalTime() << " Burstlength: " << bcp->getBurstlength() << endl
 	   << "before";
 	printSchedule(port);
 	ev << endl << "   after";
 
-	OffsetAndChannel oac = getMinFrontOffsetAndChannel(port, arrivalTime);
+	ScheduleResult res = getScheduleResult(port, bcp->getArrivalTime());
 
-	if ((oac.offset < 0) || (oac.channel != channel))
+	if ((res.channel < 0) || (res.dropped && !droppable) || ((res.channel != bcp->getBurstIngressChannel()) && !waveConversion))
 	{
 		ev << " | failed." << endl;
-		return -1;
+		return res;
 	}
-
-	scheduleTables.at(port).at(oac.channel) += (oac.offset + length);
 
 	printSchedule(port);
 	ev << endl;
 
-	return oac.channel;
+	Schedule *sc = scheduleTables.at(port).at(res.channel);
+	if (res.dropped)
+	{
+		int droppedByte = res.offset.dbl() * sc->getDatarate();
+		ev << "Packet dropped in " << droppedByte << " byte." << endl;
+		sc->getBurst()->dropPacketsFromBack(droppedByte);
+	}
+
+	sc->setTime(res.offset + bcp->getBurstlength());
+	Burst *bst = check_and_cast<Burst *>(bcp->getBurst());
+	sc->setBurst(bst);
+
+	return res;
 }
