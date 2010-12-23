@@ -36,6 +36,7 @@ BurstControlPacket_Base::BurstControlPacket_Base(const char *name, int kind) : c
     this->burstlength_var = 0;
     this->burstIngressPort_var = 0;
     this->burstIngressChannel_var = 0;
+    this->burstDropableLength_var = 0;
 }
 
 BurstControlPacket_Base::BurstControlPacket_Base(const BurstControlPacket_Base& other) : cMessage()
@@ -58,6 +59,7 @@ BurstControlPacket_Base& BurstControlPacket_Base::operator=(const BurstControlPa
     this->burstlength_var = other.burstlength_var;
     this->burstIngressPort_var = other.burstIngressPort_var;
     this->burstIngressChannel_var = other.burstIngressChannel_var;
+    this->burstDropableLength_var = other.burstDropableLength_var;
     return *this;
 }
 
@@ -70,6 +72,7 @@ void BurstControlPacket_Base::parsimPack(cCommBuffer *b)
     doPacking(b,this->burstlength_var);
     doPacking(b,this->burstIngressPort_var);
     doPacking(b,this->burstIngressChannel_var);
+    doPacking(b,this->burstDropableLength_var);
 }
 
 void BurstControlPacket_Base::parsimUnpack(cCommBuffer *b)
@@ -81,6 +84,7 @@ void BurstControlPacket_Base::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->burstlength_var);
     doUnpacking(b,this->burstIngressPort_var);
     doUnpacking(b,this->burstIngressChannel_var);
+    doUnpacking(b,this->burstDropableLength_var);
 }
 
 IPAddress& BurstControlPacket_Base::getSrcAddress()
@@ -143,6 +147,16 @@ void BurstControlPacket_Base::setBurstIngressChannel(int burstIngressChannel_var
     this->burstIngressChannel_var = burstIngressChannel_var;
 }
 
+int BurstControlPacket_Base::getBurstDropableLength() const
+{
+    return burstDropableLength_var;
+}
+
+void BurstControlPacket_Base::setBurstDropableLength(int burstDropableLength_var)
+{
+    this->burstDropableLength_var = burstDropableLength_var;
+}
+
 class BurstControlPacketDescriptor : public cClassDescriptor
 {
   public:
@@ -191,7 +205,7 @@ const char *BurstControlPacketDescriptor::getProperty(const char *propertyname) 
 int BurstControlPacketDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 6+basedesc->getFieldCount(object) : 6;
+    return basedesc ? 7+basedesc->getFieldCount(object) : 7;
 }
 
 unsigned int BurstControlPacketDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -209,8 +223,9 @@ unsigned int BurstControlPacketDescriptor::getFieldTypeFlags(void *object, int f
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<6) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<7) ? fieldTypeFlags[field] : 0;
 }
 
 const char *BurstControlPacketDescriptor::getFieldName(void *object, int field) const
@@ -228,8 +243,9 @@ const char *BurstControlPacketDescriptor::getFieldName(void *object, int field) 
         "burstlength",
         "burstIngressPort",
         "burstIngressChannel",
+        "burstDropableLength",
     };
-    return (field>=0 && field<6) ? fieldNames[field] : NULL;
+    return (field>=0 && field<7) ? fieldNames[field] : NULL;
 }
 
 int BurstControlPacketDescriptor::findField(void *object, const char *fieldName) const
@@ -242,6 +258,7 @@ int BurstControlPacketDescriptor::findField(void *object, const char *fieldName)
     if (fieldName[0]=='b' && strcmp(fieldName, "burstlength")==0) return base+3;
     if (fieldName[0]=='b' && strcmp(fieldName, "burstIngressPort")==0) return base+4;
     if (fieldName[0]=='b' && strcmp(fieldName, "burstIngressChannel")==0) return base+5;
+    if (fieldName[0]=='b' && strcmp(fieldName, "burstDropableLength")==0) return base+6;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -260,8 +277,9 @@ const char *BurstControlPacketDescriptor::getFieldTypeString(void *object, int f
         "simtime_t",
         "int",
         "int",
+        "int",
     };
-    return (field>=0 && field<6) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<7) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *BurstControlPacketDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -307,6 +325,7 @@ std::string BurstControlPacketDescriptor::getFieldAsString(void *object, int fie
         case 3: return double2string(pp->getBurstlength());
         case 4: return long2string(pp->getBurstIngressPort());
         case 5: return long2string(pp->getBurstIngressChannel());
+        case 6: return long2string(pp->getBurstDropableLength());
         default: return "";
     }
 }
@@ -325,6 +344,7 @@ bool BurstControlPacketDescriptor::setFieldAsString(void *object, int field, int
         case 3: pp->setBurstlength(string2double(value)); return true;
         case 4: pp->setBurstIngressPort(string2long(value)); return true;
         case 5: pp->setBurstIngressChannel(string2long(value)); return true;
+        case 6: pp->setBurstDropableLength(string2long(value)); return true;
         default: return false;
     }
 }
@@ -344,8 +364,9 @@ const char *BurstControlPacketDescriptor::getFieldStructName(void *object, int f
         NULL,
         NULL,
         NULL,
+        NULL,
     };
-    return (field>=0 && field<6) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<7) ? fieldStructNames[field] : NULL;
 }
 
 void *BurstControlPacketDescriptor::getFieldStructPointer(void *object, int field, int i) const

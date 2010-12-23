@@ -58,6 +58,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 OBJS = \
     $O/common/HorizonScheduler.o \
     $O/edge/AnsyncTimeSlicedDispatcher.o \
+    $O/edge/AsyncSlotTable.o \
     $O/edge/BurstDisassembler.o \
     $O/edge/MixedTimerBurstlengthBasedQueue.o \
     $O/edge/OffsetTable.o \
@@ -156,6 +157,13 @@ depend:
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	common/HorizonScheduler.h \
 	common/IBurstScheduler.h
+$O/edge/AsyncSlotTable.o: edge/AsyncSlotTable.cc \
+	edge/AsyncSlotTable.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h
 $O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
 	edge/PacketGenerator.h \
@@ -226,10 +234,23 @@ $O/edge/TimeSlicedDispatcher.o: edge/TimeSlicedDispatcher.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h \
 	edge/OffsetTable.h
 $O/edge/AnsyncTimeSlicedDispatcher.o: edge/AnsyncTimeSlicedDispatcher.cc \
-	edge/AnsyncTimeSlicedDispatcher.h \
+	edge/AsyncSlotTable.h \
+	messages/IBurst.h \
+	messages/Burst.h \
 	common/IBurstScheduler.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
+	messages/BurstControlPacket_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	messages/Burst_m.h \
+	edge/AsyncSlotTableAccess.h \
+	edge/AnsyncTimeSlicedDispatcher.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	messages/BurstControlPacket.h \
+	edge/OffsetTableAccess.h \
+	common/BurstSchedulerAccess.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h \
 	edge/OffsetTable.h
 $O/edge/OffsetTable.o: edge/OffsetTable.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \

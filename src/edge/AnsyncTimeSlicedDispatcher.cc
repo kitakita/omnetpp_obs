@@ -14,6 +14,13 @@
 // 
 
 #include "AnsyncTimeSlicedDispatcher.h"
+#include "IPAddress.h"
+#include "IPControlInfo.h"
+#include "Burst.h"
+#include "BurstControlPacket.h"
+#include "BurstSchedulerAccess.h"
+#include "OffsetTableAccess.h"
+#include "AsyncSlotTableAccess.h"
 
 Define_Module(AnsyncTimeSlicedDispatcher);
 
@@ -21,11 +28,11 @@ void AnsyncTimeSlicedDispatcher::initialize()
 {
 	oft = OffsetTableAccess().get();
 	bsc = BurstSchedulerAccess().get();
+	ast = AsyncSlotTableAccess().get();
+
 	timeslot = par("timeslot");
 	cDatarateChannel *c = check_and_cast<cDatarateChannel *>(getParentModule()->gate("burstg$o", 0)->getChannel());
 	datarate = c->getDatarate();
-
-	ett = EnsureTimeTableAccess().get();
 }
 
 void AnsyncTimeSlicedDispatcher::handleMessage(cMessage *msg)
@@ -50,12 +57,12 @@ void AnsyncTimeSlicedDispatcher::sendBurst(cMessage *msg)
 	IPAddress dest = ctrl->getDestAddr();
 
 	simtime_t offset = oft->getOffset(dest);
-	simtime_t slotoffset = ett->getBitOffset(dest) / datarate;
+	simtime_t slotoffset = ast->getBitOffset(dest) / datarate;
 	simtime_t burstSendingTime = simTime() + offset;
 	simtime_t nowTimeslot = timeslot * (int)(burstSendingTime / timeslot) + slotoffset;
 	simtime_t nextTimeslot = timeslot * ((int)(burstSendingTime / timeslot) + 1) + slotoffset;
 	simtime_t burstlength = bst->getBitLength() / datarate;
-	simtime_t ensurelength = ett->getEnsureBitLength(dest) / datarate;
+	simtime_t ensurelength = ast->getEnsureBitLength(dest) / datarate;
 
 	ev << "Dispatcher send burst." << endl
 	   << "bcpoffset: " << offset << " | "
@@ -89,8 +96,8 @@ void AnsyncTimeSlicedDispatcher::sendBurst(cMessage *msg)
     bcp->setBurstIngressChannel(channel);
 
     // only async field
-    if (bst->getByteLength() > ett->getEnsureByteLength(dest))
-    	bcp->setBurstDropableLength(bst->getBitLength() - ett->getEnsureByteLength(dest));
+    if (bst->getBitLength() > ast->getEnsureBitLength(dest))
+    	bcp->setBurstDropableLength(bst->getBitLength() - ast->getEnsureBitLength(dest));
     else
     	bcp->setBurstDropableLength(0);
 

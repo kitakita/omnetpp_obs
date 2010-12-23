@@ -30,6 +30,7 @@
  *     simtime_t burstlength;
  *     int burstIngressPort;
  *     int burstIngressChannel;
+ *     int burstDropableLength;
  * }
  * </pre>
  *
@@ -63,6 +64,7 @@ class BurstControlPacket_Base : public ::cMessage
     simtime_t burstlength_var;
     int burstIngressPort_var;
     int burstIngressChannel_var;
+    int burstDropableLength_var;
 
     // protected and unimplemented operator==(), to prevent accidental usage
     bool operator==(const BurstControlPacket_Base&);
@@ -93,6 +95,8 @@ class BurstControlPacket_Base : public ::cMessage
     virtual void setBurstIngressPort(int burstIngressPort_var);
     virtual int getBurstIngressChannel() const;
     virtual void setBurstIngressChannel(int burstIngressChannel_var);
+    virtual int getBurstDropableLength() const;
+    virtual void setBurstDropableLength(int burstDropableLength_var);
 };
 
 

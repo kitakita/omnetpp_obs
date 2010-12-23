@@ -13,34 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __OMNETPP_OBS_ANSYNCTIMESLICEDDISPATCHER_H_
-#define __OMNETPP_OBS_ANSYNCTIMESLICEDDISPATCHER_H_
+package omnetpp_obs.edge;
 
-#include <omnetpp.h>
-#include "OffsetTable.h"
-#include "IBurstScheduler.h"
-#include "AsyncSlotTable.h"
-
-/**
- * TODO - Generated class
- */
-class AnsyncTimeSlicedDispatcher : public cSimpleModule
+//
+// TODO auto-generated module
+//
+simple AsyncSlotTable
 {
-  protected:
-	OffsetTable *oft;
-	IBurstScheduler *bsc;
-	AsyncSlotTable *ast;
-	simtime_t timeslot;
-	double datarate;
-	int frontByteLength;
-	int ensureByteLength;
-	int backByteLength;
-
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-
-    virtual void sendBurst(cMessage *msg);
-	virtual void receiveBurst(cMessage *msg);
-};
-
-#endif
+    parameters:
+        string asyncSlotTableFile = default("")
+    	@display("i=block/table2");
+}

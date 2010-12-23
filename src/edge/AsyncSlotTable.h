@@ -13,34 +13,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __OMNETPP_OBS_ANSYNCTIMESLICEDDISPATCHER_H_
-#define __OMNETPP_OBS_ANSYNCTIMESLICEDDISPATCHER_H_
+#ifndef __OMNETPP_OBS_ASYNCSLOTTABLE_H_
+#define __OMNETPP_OBS_ASYNCSLOTTABLE_H_
 
 #include <omnetpp.h>
-#include "OffsetTable.h"
-#include "IBurstScheduler.h"
-#include "AsyncSlotTable.h"
+#include "IPAddress.h"
 
 /**
  * TODO - Generated class
  */
-class AnsyncTimeSlicedDispatcher : public cSimpleModule
+class AsyncSlotTable : public cSimpleModule
 {
   protected:
-	OffsetTable *oft;
-	IBurstScheduler *bsc;
-	AsyncSlotTable *ast;
-	simtime_t timeslot;
-	double datarate;
-	int frontByteLength;
-	int ensureByteLength;
-	int backByteLength;
+	typedef std::map<IPAddress, int> EnsureLengthTable;
+	typedef std::pair<IPAddress, int> EnsureLength;
+	EnsureLengthTable ensureTable;
+
+	typedef std::map<IPAddress, int> OffsetTable;
+	typedef std::pair<IPAddress, int> Offset;
+	OffsetTable offsetTable;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
-    virtual void sendBurst(cMessage *msg);
-	virtual void receiveBurst(cMessage *msg);
+  public:
+    virtual int getBitOffset(const IPAddress& dest);
+    virtual int getEnsureBitLength(const IPAddress& dest);
 };
 
 #endif
