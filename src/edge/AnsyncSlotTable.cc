@@ -14,12 +14,12 @@
 // 
 
 #include <fstream>
-#include "AsyncSlotTable.h"
+#include "AnsyncSlotTable.h"
 #include "IPAddressResolver.h"
 
-Define_Module(AsyncSlotTable);
+Define_Module(AnsyncSlotTable);
 
-void AsyncSlotTable::initialize()
+void AnsyncSlotTable::initialize()
 {
 	const char *destAddrs = par("offsetTableFile");
 
@@ -37,13 +37,13 @@ void AsyncSlotTable::initialize()
 	ifs.close();
 }
 
-void AsyncSlotTable::handleMessage(cMessage *msg)
+void AnsyncSlotTable::handleMessage(cMessage *msg)
 {
 	opp_error("This module cannot to receive any messages.");
 	delete msg;
 }
 
-int AsyncSlotTable::getEnsureBitLength(const IPAddress& dest)
+int AnsyncSlotTable::getEnsureBitLength(const IPAddress& dest)
 {
 	EnsureLengthTable::iterator it = ensureTable.find(dest);
 	if (it != ensureTable.end())
@@ -55,7 +55,7 @@ int AsyncSlotTable::getEnsureBitLength(const IPAddress& dest)
 	}
 }
 
-int AsyncSlotTable::getBitOffset(const IPAddress& dest)
+int AnsyncSlotTable::getBitOffset(const IPAddress& dest)
 {
 	OffsetTable::iterator it = offsetTable.find(dest);
 	if (it != offsetTable.end())

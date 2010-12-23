@@ -86,6 +86,8 @@ void TimeSlicedDispatcher::sendBurst(cMessage *msg)
     bcp->setBurstIngressPort(0);
     bcp->setBurstIngressChannel(channel);
 
+    bcp->setBurstDropableLength(bst->getBitLength() / 2);
+
     send(bcp, "bcpg$o");
     sendDelayed(bst, burstSendingTime - simTime(), "burstg$o", channel);
 }

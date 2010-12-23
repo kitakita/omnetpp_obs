@@ -20,7 +20,7 @@
 #include "BurstControlPacket.h"
 #include "BurstSchedulerAccess.h"
 #include "OffsetTableAccess.h"
-#include "AsyncSlotTableAccess.h"
+#include "AnsyncSlotTableAccess.h"
 
 Define_Module(AnsyncTimeSlicedDispatcher);
 
@@ -28,7 +28,7 @@ void AnsyncTimeSlicedDispatcher::initialize()
 {
 	oft = OffsetTableAccess().get();
 	bsc = BurstSchedulerAccess().get();
-	ast = AsyncSlotTableAccess().get();
+	ast = AnsyncSlotTableAccess().get();
 
 	timeslot = par("timeslot");
 	cDatarateChannel *c = check_and_cast<cDatarateChannel *>(getParentModule()->gate("burstg$o", 0)->getChannel());
@@ -95,7 +95,6 @@ void AnsyncTimeSlicedDispatcher::sendBurst(cMessage *msg)
     bcp->setBurstIngressPort(0);
     bcp->setBurstIngressChannel(channel);
 
-    // only async field
     if (bst->getBitLength() > ast->getEnsureBitLength(dest))
     	bcp->setBurstDropableLength(bst->getBitLength() - ast->getEnsureBitLength(dest));
     else

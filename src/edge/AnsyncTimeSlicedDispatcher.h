@@ -19,7 +19,7 @@
 #include <omnetpp.h>
 #include "OffsetTable.h"
 #include "IBurstScheduler.h"
-#include "AsyncSlotTable.h"
+#include "AnsyncSlotTable.h"
 
 /**
  * TODO - Generated class
@@ -29,7 +29,7 @@ class AnsyncTimeSlicedDispatcher : public cSimpleModule
   protected:
 	OffsetTable *oft;
 	IBurstScheduler *bsc;
-	AsyncSlotTable *ast;
+	AnsyncSlotTable *ast;
 	simtime_t timeslot;
 	double datarate;
 	int frontByteLength;

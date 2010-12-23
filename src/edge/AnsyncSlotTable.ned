@@ -18,9 +18,9 @@ package omnetpp_obs.edge;
 //
 // TODO auto-generated module
 //
-simple AsyncSlotTable
+simple AnsyncSlotTable
 {
     parameters:
-        string asyncSlotTableFile = default("")
-    	@display("i=block/table2");
+        string ansyncSlotTableFile = default("");
+        @display("i=block/table2");
 }

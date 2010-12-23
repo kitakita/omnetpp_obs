@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __OMNETPP_OBS_ASYNCSLOTTABLE_H_
-#define __OMNETPP_OBS_ASYNCSLOTTABLE_H_
+#ifndef __OMNETPP_OBS_ANSYNCSLOTTABLE_H_
+#define __OMNETPP_OBS_ANSYNCSLOTTABLE_H_
 
 #include <omnetpp.h>
 #include "IPAddress.h"
@@ -22,7 +22,7 @@
 /**
  * TODO - Generated class
  */
-class AsyncSlotTable : public cSimpleModule
+class AnsyncSlotTable : public cSimpleModule
 {
   protected:
 	typedef std::map<IPAddress, int> EnsureLengthTable;
