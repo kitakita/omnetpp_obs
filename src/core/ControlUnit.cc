@@ -18,7 +18,7 @@
 #include "CoreRoutingTableAccess.h"
 #include "BurstSchedulerAccess.h"
 #include "OpticalSwitchFabricAccess.h"
-#include "ConnectionEvent_m.h"
+#include "WDMTableAccess.h"
 
 Define_Module(ControlUnit);
 
@@ -27,13 +27,23 @@ void ControlUnit::initialize()
 	crt = CoreRoutingTableAccess().get();
 	scd = BurstSchedulerAccess().get();
 	osf = OpticalSwitchFabricAccess().get();
+	wdm = WDMTableAccess().get();
 
 	simtime_t bcpProcessDelay = par("bcpProcessDelay");
 	simtime_t oeConvertDelay = par("oeConvertDelay");
 	processDelay = bcpProcessDelay + (oeConvertDelay * 2);
 	guardtime = SimTime::parse("0.00000000001");
+
+	cModule *parent = getParentModule();
+	int gatesize = parent->gateSize("burstg$o");
+	for (int i = 0; i < gatesize; i++)
+	{
+		connectMsgTable.push_back(new ConnectionEvent());
+		disconnectMsgTable.push_back(new ConnectionEvent());
+	}
+
 	failedCounter = 0;
-	parent = getParentModule();
+
 	WATCH(failedCounter);
 }
 
@@ -45,16 +55,24 @@ void ControlUnit::handleMessage(cMessage *msg)
 		handleBurstControlPacket(msg);
 }
 
+void ControlUnit::finish()
+{
+	EventTable::iterator it = connectMsgTable.begin();
+	while (it != connectMsgTable.end())
+		cancelAndDelete (*it++);
+	it = disconnectMsgTable.begin();
+	while (it != connectMsgTable.end())
+		cancelAndDelete (*it++);
+}
+
 void ControlUnit::handleSelfEvent(cMessage *msg)
 {
 	ConnectionEvent *cue = check_and_cast<ConnectionEvent *>(msg);
 
 	if (cue->getKind() == 0)
-		osf->connect(cue->getInPort(), cue->getInChannel(), cue->getOutPort(), cue->getOutChannel());
+		osf->connect(cue->getIn(), cue->getOut());
 	else
-		osf->disconnect(cue->getInPort(), cue->getInChannel());
-
-	delete msg;
+		osf->disconnect(cue->getIn());
 }
 
 void ControlUnit::handleBurstControlPacket(cMessage *msg)
@@ -68,40 +86,43 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 
 	if (outChannel < 0)
 	{
-		ev << bcp << " schedule failed." << endl;
-		delete msg;
 		failedCounter++;
-		if (ev.isGUI())
-		{
-			char buf[32];
-		    sprintf(buf, "drop: %d bursts", failedCounter);
-			getDisplayString().setTagArg("t", 0, buf);
-		}
+
+		ev << bcp << " schedule failed." << endl;
+
+		delete msg;
 	}
 	else
 	{
 		ev << bcp << " schedule success." << endl;
 
-		ConnectionEvent *connect = new ConnectionEvent("ControlUnitEvent");
+		int inGateIndex = wdm->getGateIndex(inPort, inChannel);
+		int outGateIndex = wdm->getGateIndex(inPort, inChannel);
+
+		ConnectionEvent *connect = connectMsgTable.at(inGateIndex);
 		connect->setKind(0);
-		connect->setInPort(inPort);
-		connect->setInChannel(inChannel);
-		connect->setOutPort(outPort);
-		connect->setOutChannel(outChannel);
+		connect->setIn(inGateIndex);
+		connect->setOut(outGateIndex);
 		scheduleAt(bcp->getBurstArrivalTime() - guardtime, connect);
 
-		ConnectionEvent *disconnect = new ConnectionEvent("ControlUnitEvent");
+		ConnectionEvent *disconnect = disconnectMsgTable.at(inGateIndex);
 		disconnect->setKind(1);
-		disconnect->setInPort(inPort);
-		disconnect->setInChannel(inChannel);
-		scheduleAt(bcp->getBurstArrivalTime() + bcp->getBurstlength(), disconnect);
+		disconnect->setIn(inGateIndex);
+		scheduleAt(bcp->getBurstArrivalTime() + bcp->getBurstlength() - guardtime, disconnect);
 
 		ev << "Burst sending schedule at " << bcp->getBurstArrivalTime() << " to " << bcp->getBurstArrivalTime() + bcp->getBurstlength() << endl;
 
-		bcp->setBurstArrivalTime(bcp->getBurstArrivalTime() + osf->getTransmissionDelay(outPort));
+		bcp->setBurstArrivalTime(bcp->getBurstArrivalTime() + wdm->getTransmissionDelay(outPort));
 		bcp->setBurstIngressPort(crt->getReceivePort(bcp->getDestAddresss()));
 		bcp->setBurstIngressChannel(outChannel);
 
 		sendDelayed(bcp, processDelay, "bcpg$o", outPort);
+	}
+
+	if (ev.isGUI())
+	{
+		char buf[32];
+		sprintf(buf, "drop: %d bursts", failedCounter);
+		getDisplayString().setTagArg("t", 0, buf);
 	}
 }

@@ -13,10 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+package omnetpp_obs.common;
+
 //
-// TODO generated message class
+// TODO auto-generated module
 //
-message ConnectionEvent {
-    int in;
-    int out;
+simple WDMTable
+{
+    @display("i=block/table2");
 }

@@ -13,30 +13,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TSOBS_OPTICALSWITCHFABRIC_H_
-#define __TSOBS_OPTICALSWITCHFABRIC_H_
+#ifndef __OMNETPP_OBS_WDMTABLE_H_
+#define __OMNETPP_OBS_WDMTABLE_H_
 
 #include <omnetpp.h>
 
 /**
  * TODO - Generated class
  */
-class OpticalSwitchFabric : public cSimpleModule
+class WDMTable : public cSimpleModule
 {
   protected:
-	typedef std::vector<int> ConnectionTable;
-	ConnectionTable connectionTable;
+	int numLinkedNodes;
 
-	int dropCounter;
+	typedef std::vector<int> NumChannelTable;
+	NumChannelTable numChannelTable;
+
+	typedef std::vector<simtime_t> TransmissionDelayTable;
+	TransmissionDelayTable transmissionDelayTable;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
-    virtual void printSwitch();
-
   public:
-    virtual void connect(int in, int out);
-    virtual void disconnect(int in);
+    int getNumLinkedNodes() { return numLinkedNodes; }
+    virtual int getGateIndex(int port, int channel);
+    simtime_t getTransmissionDelay(int port) { return transmissionDelayTable.at(port); }
 };
 
 #endif

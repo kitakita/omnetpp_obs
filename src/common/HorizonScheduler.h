@@ -35,12 +35,13 @@ class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 	virtual void initialize();
 	virtual void handleMessage(cMessage *msg);
 
-	virtual OffsetAndChannel getMinFrontOffsetAndChannel(int outPort, simtime_t arrivalTime);
+	virtual OffsetAndChannel getMinFrontOffsetAndChannel(int port, simtime_t arrivalTime);
 	virtual void printSchedule(int outPort);
 	virtual void updateDisplayString();
 
   public:
-	virtual int schedule(int outPort, simtime_t arrivalTime, simtime_t length);
+	virtual int schedule(int port, simtime_t arrivalTime, simtime_t length);
+	virtual int schedule(int port, int channel, simtime_t arrivalTime, simtime_t length);
 };
 
 #endif

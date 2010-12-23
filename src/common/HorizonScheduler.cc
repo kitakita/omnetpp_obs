@@ -43,16 +43,16 @@ void HorizonScheduler::handleMessage(cMessage *msg)
 	opp_error("%s cannot receive any messages (receive: %s).", getFullName(), msg);
 }
 
-OffsetAndChannel HorizonScheduler::getMinFrontOffsetAndChannel(int outPort, simtime_t arrivalTime)
+OffsetAndChannel HorizonScheduler::getMinFrontOffsetAndChannel(int port, simtime_t arrivalTime)
 {
 	OffsetAndChannel oac;
-	oac.offset = arrivalTime - scheduleTables.at(outPort).at(0);
+	oac.offset = arrivalTime - scheduleTables.at(port).at(0);
 	oac.channel = 0;
 
-	int size = scheduleTables.at(outPort).size();
+	int size = scheduleTables.at(port).size();
 	for (int i = 1; i < size; i++)
 	{
-		simtime_t offset = arrivalTime - scheduleTables.at(outPort).at(i);
+		simtime_t offset = arrivalTime - scheduleTables.at(port).at(i);
 		if (offset > 0)
 		{
 			if (((oac.offset > 0) && (oac.offset > offset)) || (oac.offset <= 0))
@@ -73,13 +73,13 @@ OffsetAndChannel HorizonScheduler::getMinFrontOffsetAndChannel(int outPort, simt
 	return oac;
 }
 
-void HorizonScheduler::printSchedule(int outPort)
+void HorizonScheduler::printSchedule(int port)
 {
-	int size = scheduleTables.at(outPort).size();
+	int size = scheduleTables.at(port).size();
 	for (int i = 0; i < size; i++)
 	{
 		char schedule[32];
-		sprintf(schedule, "%16.12f", scheduleTables.at(outPort).at(i).dbl());
+		sprintf(schedule, "%16.12f", scheduleTables.at(port).at(i).dbl());
 		ev << " | " << schedule;
 	}
 }
@@ -104,17 +104,17 @@ void HorizonScheduler::updateDisplayString()
     getDisplayString().setTagArg("t", 0, tag);
 }
 
-int HorizonScheduler::schedule(int outPort, simtime_t arrivalTime, simtime_t length)
+int HorizonScheduler::schedule(int port, simtime_t arrivalTime, simtime_t length)
 {
-	Enter_Method("Schedule at %f (length %f [s]) to port %d.", arrivalTime.dbl(), length.dbl(), outPort);
+	Enter_Method("Schedule at %f (length %f [s]) to port %d (channel changeable).", arrivalTime.dbl(), length.dbl(), port);
 
-	ev << getFullPath() << " (id=" << getId() << "): " << "port " << outPort << " schedule start." << endl
+	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
 	   << "Burst Arrival Time: " << arrivalTime << " Burstlength: " << length << endl
 	   << "before";
-	printSchedule(outPort);
+	printSchedule(port);
 	ev << endl << "   after";
 
-	OffsetAndChannel oac = getMinFrontOffsetAndChannel(outPort, arrivalTime);
+	OffsetAndChannel oac = getMinFrontOffsetAndChannel(port, arrivalTime);
 
 	if (oac.offset < 0)
 	{
@@ -122,9 +122,35 @@ int HorizonScheduler::schedule(int outPort, simtime_t arrivalTime, simtime_t len
 		return -1;
 	}
 
-	scheduleTables.at(outPort).at(oac.channel) += (oac.offset + length);
+	scheduleTables.at(port).at(oac.channel) += (oac.offset + length);
 
-	printSchedule(outPort);
+	printSchedule(port);
+	ev << endl;
+
+	return oac.channel;
+}
+
+int HorizonScheduler::schedule(int port, int channel, simtime_t arrivalTime, simtime_t length)
+{
+	Enter_Method("Schedule at %f (length %f [s]) to port %d (channel fixed).", arrivalTime.dbl(), length.dbl(), port);
+
+	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
+	   << "Burst Arrival Time: " << arrivalTime << " Burstlength: " << length << endl
+	   << "before";
+	printSchedule(port);
+	ev << endl << "   after";
+
+	OffsetAndChannel oac = getMinFrontOffsetAndChannel(port, arrivalTime);
+
+	if ((oac.offset < 0) || (oac.channel != channel))
+	{
+		ev << " | failed." << endl;
+		return -1;
+	}
+
+	scheduleTables.at(port).at(oac.channel) += (oac.offset + length);
+
+	printSchedule(port);
 	ev << endl;
 
 	return oac.channel;

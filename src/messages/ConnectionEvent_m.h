@@ -19,20 +19,16 @@
  * Class generated from <tt>messages/ConnectionEvent.msg</tt> by opp_msgc.
  * <pre>
  * message ConnectionEvent {
- *     int inPort;
- *     int inChannel;
- *     int outPort;
- *     int outChannel;
+ *     int in;
+ *     int out;
  * }
  * </pre>
  */
 class ConnectionEvent : public ::cMessage
 {
   protected:
-    int inPort_var;
-    int inChannel_var;
-    int outPort_var;
-    int outChannel_var;
+    int in_var;
+    int out_var;
 
     // protected and unimplemented operator==(), to prevent accidental usage
     bool operator==(const ConnectionEvent&);
@@ -47,14 +43,10 @@ class ConnectionEvent : public ::cMessage
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual int getInPort() const;
-    virtual void setInPort(int inPort_var);
-    virtual int getInChannel() const;
-    virtual void setInChannel(int inChannel_var);
-    virtual int getOutPort() const;
-    virtual void setOutPort(int outPort_var);
-    virtual int getOutChannel() const;
-    virtual void setOutChannel(int outChannel_var);
+    virtual int getIn() const;
+    virtual void setIn(int in_var);
+    virtual int getOut() const;
+    virtual void setOut(int out_var);
 };
 
 inline void doPacking(cCommBuffer *b, ConnectionEvent& obj) {obj.parsimPack(b);}

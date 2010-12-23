@@ -19,38 +19,29 @@ Define_Module(OpticalSwitchFabric);
 
 void OpticalSwitchFabric::initialize()
 {
-	numDataChannels = par("numDataChannels");
+	int gatesize = gateSize("burstg$i");
 
-	if (gateSize("burstg$i") % numDataChannels != 0)
-		opp_error("Number of data channels is wrong.");
-	numLinkedNodes = gateSize("burstg$i") / numDataChannels;
-
-	for (int i = 0; i < numDataChannels * numLinkedNodes; i++)
+	for (int i = 0; i < gatesize; i++)
 		connectionTable.push_back(-1);
-
-	for (int i = 0; i < numLinkedNodes; i++)
-	{
-		cGate *g = gate("burstg$o", i * numDataChannels);
-		cDatarateChannel *c = check_and_cast<cDatarateChannel *>(g->getTransmissionChannel());
-		transmissionDelay.push_back(c->getDelay());
-	}
-	std::vector<simtime_t>::iterator it = transmissionDelay.begin();
 
 	dropCounter = 0;
 
 	WATCH(dropCounter);
+
 	printSwitch();
 }
 
 void OpticalSwitchFabric::handleMessage(cMessage *msg)
 {
-	int port = msg->getArrivalGate()->getIndex();
+	int index = msg->getArrivalGate()->getIndex();
+	int port = connectionTable.at(index);
 
-	if (connectionTable[port] >= 0)
+	if (port >= 0)
 	{
-		cGate *g = gate("burstg$o", connectionTable[port]);
-		ev << "port " << port << " to " << connectionTable[port] << endl;
-		send(msg, "burstg$o", connectionTable[port]);
+		ev << "Optical switch: " << msg->getName() << " through port " << port << " to " << port << "." << endl;
+
+		send(msg, "burstg$o", port);
+
 		printSwitch();
 	}
 	else
@@ -69,37 +60,42 @@ void OpticalSwitchFabric::handleMessage(cMessage *msg)
 	}
 }
 
-void OpticalSwitchFabric::connect(int inPort, int inChannel, int outPort, int outChannel)
+void OpticalSwitchFabric::connect(int in, int out)
 {
-	Enter_Method("Switching port: %d channel: %d to port: %d channel: %d.", inPort, inChannel, outPort, outChannel);
+	Enter_Method("Switching port: input %d to output %d.", in, out);
 
-	if ((inPort > numLinkedNodes - 1) || (outPort > numLinkedNodes - 1))
-		opp_error("Wrong node (in:%d, out:%d).", inPort, outPort);
+	if ((in >= (int)connectionTable.size()) || (out >= (int)connectionTable.size()))
+		opp_error("Switch index out of range (in:%d, out:%d).", in, out);
 
-	int inIndex = inPort * numDataChannels + inChannel;
-	int outIndex = outPort * numDataChannels + outChannel;
-	connectionTable[inIndex] = outIndex;
+	connectionTable.at(in) = out;
+
+	ConnectionTable::iterator it = connectionTable.begin();
+	while(it != connectionTable.end())
+	{
+		if (*it == out)
+			*it = out;
+		it++;
+	}
 
 	printSwitch();
 }
 
-void OpticalSwitchFabric::disconnect(int inPort, int inChannel)
+void OpticalSwitchFabric::disconnect(int in)
 {
-	Enter_Method("port: %d channel: %d disconnected.", inPort, inChannel);
+	Enter_Method("Switching port: input %d disconnected.", in);
 
-	connectionTable[inPort * numDataChannels + inChannel] = -1;
+	if (in >= (int)connectionTable.size())
+			opp_error("Switch index out of range (in:%d, out:%d).", in);
+
+	connectionTable.at(in) = -1;
 
 	printSwitch();
-}
-
-simtime_t OpticalSwitchFabric::getTransmissionDelay(int receiverNodeId)
-{
-	return transmissionDelay[receiverNodeId];
 }
 
 void OpticalSwitchFabric::printSwitch()
 {
-	ev << getFullPath() << " in " << simTime() << endl;
-	for (int i = 0; i < numDataChannels * numLinkedNodes; i++)
-		ev << "index " << i << " connect to " << connectionTable[i] << endl;
+	ConnectionTable::iterator it = connectionTable.begin();
+	int i = 0;
+	while(it != connectionTable.end())
+		ev << "port " << i++ << " connect to " << *it++ << endl;
 }

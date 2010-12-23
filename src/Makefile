@@ -57,6 +57,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 # Object files for local .cc and .msg files
 OBJS = \
     $O/common/HorizonScheduler.o \
+    $O/common/WDMTable.o \
     $O/core/ControlUnit.o \
     $O/core/CoreRoutingTable.o \
     $O/core/OpticalSwitchFabric.o \
@@ -160,6 +161,8 @@ depend:
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	common/HorizonScheduler.h \
 	common/IBurstScheduler.h
+$O/common/WDMTable.o: common/WDMTable.cc \
+	common/WDMTable.h
 $O/core/OpticalSwitchFabric.o: core/OpticalSwitchFabric.cc \
 	core/OpticalSwitchFabric.h
 $O/core/ControlUnit.o: core/ControlUnit.cc \
@@ -170,11 +173,13 @@ $O/core/ControlUnit.o: core/ControlUnit.cc \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	core/OpticalSwitchFabricAccess.h \
 	core/OpticalSwitchFabric.h \
+	common/WDMTable.h \
 	messages/BurstControlPacket_m.h \
 	messages/BurstControlPacket.h \
 	common/BurstSchedulerAccess.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	common/WDMTableAccess.h \
 	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	core/CoreRoutingTableAccess.h
 $O/core/CoreRoutingTable.o: core/CoreRoutingTable.cc \
 	core/CoreRoutingTable.h \

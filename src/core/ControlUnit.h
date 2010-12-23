@@ -20,6 +20,8 @@
 #include "CoreRoutingTable.h"
 #include "IBurstScheduler.h"
 #include "OpticalSwitchFabric.h"
+#include "WDMTable.h"
+#include "ConnectionEvent_m.h"
 
 /**
  * TODO - Generated class
@@ -30,15 +32,20 @@ class ControlUnit : public cSimpleModule
 	CoreRoutingTable *crt;
 	IBurstScheduler *scd;
 	OpticalSwitchFabric *osf;
-	int numDataChannels;
-	int numLinkedNodes;
+	WDMTable *wdm;
+
 	simtime_t processDelay;
 	simtime_t guardtime;
-	cModule *parent;
+
+	typedef std::vector<ConnectionEvent *> EventTable;
+	EventTable connectMsgTable;
+	EventTable disconnectMsgTable;
+
 	int failedCounter;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    virtual void finish();
 
     virtual void handleSelfEvent(cMessage *msg);
     virtual void handleBurstControlPacket(cMessage *msg);

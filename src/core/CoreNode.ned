@@ -39,7 +39,6 @@ module CoreNode
         }
         opticalSwitchFabric: OpticalSwitchFabric {
             parameters:
-                numDataChannels = numDataChannels;
                 @display("p=165,170");
             gates:
                 burstg[sizeof(burstg)];

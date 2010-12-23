@@ -21,7 +21,6 @@ package omnetpp_obs.core;
 simple OpticalSwitchFabric
 {
     parameters:
-        int numDataChannels;
     	@display("i=abstract/switch");
     gates:
         inout burstg[];

@@ -34,10 +34,8 @@ Register_Class(ConnectionEvent);
 
 ConnectionEvent::ConnectionEvent(const char *name, int kind) : cMessage(name,kind)
 {
-    this->inPort_var = 0;
-    this->inChannel_var = 0;
-    this->outPort_var = 0;
-    this->outChannel_var = 0;
+    this->in_var = 0;
+    this->out_var = 0;
 }
 
 ConnectionEvent::ConnectionEvent(const ConnectionEvent& other) : cMessage()
@@ -54,69 +52,43 @@ ConnectionEvent& ConnectionEvent::operator=(const ConnectionEvent& other)
 {
     if (this==&other) return *this;
     cMessage::operator=(other);
-    this->inPort_var = other.inPort_var;
-    this->inChannel_var = other.inChannel_var;
-    this->outPort_var = other.outPort_var;
-    this->outChannel_var = other.outChannel_var;
+    this->in_var = other.in_var;
+    this->out_var = other.out_var;
     return *this;
 }
 
 void ConnectionEvent::parsimPack(cCommBuffer *b)
 {
     cMessage::parsimPack(b);
-    doPacking(b,this->inPort_var);
-    doPacking(b,this->inChannel_var);
-    doPacking(b,this->outPort_var);
-    doPacking(b,this->outChannel_var);
+    doPacking(b,this->in_var);
+    doPacking(b,this->out_var);
 }
 
 void ConnectionEvent::parsimUnpack(cCommBuffer *b)
 {
     cMessage::parsimUnpack(b);
-    doUnpacking(b,this->inPort_var);
-    doUnpacking(b,this->inChannel_var);
-    doUnpacking(b,this->outPort_var);
-    doUnpacking(b,this->outChannel_var);
+    doUnpacking(b,this->in_var);
+    doUnpacking(b,this->out_var);
 }
 
-int ConnectionEvent::getInPort() const
+int ConnectionEvent::getIn() const
 {
-    return inPort_var;
+    return in_var;
 }
 
-void ConnectionEvent::setInPort(int inPort_var)
+void ConnectionEvent::setIn(int in_var)
 {
-    this->inPort_var = inPort_var;
+    this->in_var = in_var;
 }
 
-int ConnectionEvent::getInChannel() const
+int ConnectionEvent::getOut() const
 {
-    return inChannel_var;
+    return out_var;
 }
 
-void ConnectionEvent::setInChannel(int inChannel_var)
+void ConnectionEvent::setOut(int out_var)
 {
-    this->inChannel_var = inChannel_var;
-}
-
-int ConnectionEvent::getOutPort() const
-{
-    return outPort_var;
-}
-
-void ConnectionEvent::setOutPort(int outPort_var)
-{
-    this->outPort_var = outPort_var;
-}
-
-int ConnectionEvent::getOutChannel() const
-{
-    return outChannel_var;
-}
-
-void ConnectionEvent::setOutChannel(int outChannel_var)
-{
-    this->outChannel_var = outChannel_var;
+    this->out_var = out_var;
 }
 
 class ConnectionEventDescriptor : public cClassDescriptor
@@ -166,7 +138,7 @@ const char *ConnectionEventDescriptor::getProperty(const char *propertyname) con
 int ConnectionEventDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 4+basedesc->getFieldCount(object) : 4;
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
 unsigned int ConnectionEventDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -180,10 +152,8 @@ unsigned int ConnectionEventDescriptor::getFieldTypeFlags(void *object, int fiel
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
     };
-    return (field>=0 && field<4) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *ConnectionEventDescriptor::getFieldName(void *object, int field) const
@@ -195,22 +165,18 @@ const char *ConnectionEventDescriptor::getFieldName(void *object, int field) con
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "inPort",
-        "inChannel",
-        "outPort",
-        "outChannel",
+        "in",
+        "out",
     };
-    return (field>=0 && field<4) ? fieldNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
 int ConnectionEventDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='i' && strcmp(fieldName, "inPort")==0) return base+0;
-    if (fieldName[0]=='i' && strcmp(fieldName, "inChannel")==0) return base+1;
-    if (fieldName[0]=='o' && strcmp(fieldName, "outPort")==0) return base+2;
-    if (fieldName[0]=='o' && strcmp(fieldName, "outChannel")==0) return base+3;
+    if (fieldName[0]=='i' && strcmp(fieldName, "in")==0) return base+0;
+    if (fieldName[0]=='o' && strcmp(fieldName, "out")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -225,10 +191,8 @@ const char *ConnectionEventDescriptor::getFieldTypeString(void *object, int fiel
     static const char *fieldTypeStrings[] = {
         "int",
         "int",
-        "int",
-        "int",
     };
-    return (field>=0 && field<4) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *ConnectionEventDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -268,10 +232,8 @@ std::string ConnectionEventDescriptor::getFieldAsString(void *object, int field,
     }
     ConnectionEvent *pp = (ConnectionEvent *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getInPort());
-        case 1: return long2string(pp->getInChannel());
-        case 2: return long2string(pp->getOutPort());
-        case 3: return long2string(pp->getOutChannel());
+        case 0: return long2string(pp->getIn());
+        case 1: return long2string(pp->getOut());
         default: return "";
     }
 }
@@ -286,10 +248,8 @@ bool ConnectionEventDescriptor::setFieldAsString(void *object, int field, int i,
     }
     ConnectionEvent *pp = (ConnectionEvent *)object; (void)pp;
     switch (field) {
-        case 0: pp->setInPort(string2long(value)); return true;
-        case 1: pp->setInChannel(string2long(value)); return true;
-        case 2: pp->setOutPort(string2long(value)); return true;
-        case 3: pp->setOutChannel(string2long(value)); return true;
+        case 0: pp->setIn(string2long(value)); return true;
+        case 1: pp->setOut(string2long(value)); return true;
         default: return false;
     }
 }
@@ -305,10 +265,8 @@ const char *ConnectionEventDescriptor::getFieldStructName(void *object, int fiel
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
-        NULL,
-        NULL,
     };
-    return (field>=0 && field<4) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
 void *ConnectionEventDescriptor::getFieldStructPointer(void *object, int field, int i) const
