@@ -27,11 +27,13 @@ void HorizonScheduler::initialize()
 	cModule *parent = getParentModule();
 	int gatesize = parent->gateSize("burstg$o");
 
+
 	for (int i = 0, prev = -1; i < gatesize; i++)
 	{
 		cGate *g = parent->gate("burstg$o", i)->getNextGate();
-		cDatarateChannel *c = check_and_cast<cDatarateChannel *>(g->getChannel());
-		double datarate = c->getDatarate();
+		cChannel *ch = parent->gate("burstg$o", i)->getChannel();
+		cDatarateChannel *dc = check_and_cast<cDatarateChannel *>(ch);
+		double datarate = dc->getDatarate();
 		int id = g->getOwnerModule()->getId();
 		if (id != prev)
 		{
