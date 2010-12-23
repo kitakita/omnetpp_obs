@@ -24,7 +24,7 @@ void HorizonScheduler::initialize()
 
 	for (int i = 0, prev = -1; i < gatesize; i++)
 	{
-		cGate *g = parent->gate("burst$o", i);
+		cGate *g = parent->gate("burstg$o", i)->getNextGate();
 		int id = g->getOwnerModule()->getId();
 		if (id != prev)
 		{
@@ -98,6 +98,7 @@ void HorizonScheduler::updateDisplayString()
     	char buf[16];
     	sprintf(buf, " %d", stit->size());
     	strcat(tag, buf);
+    	stit++;
     }
 
     getDisplayString().setTagArg("t", 0, tag);

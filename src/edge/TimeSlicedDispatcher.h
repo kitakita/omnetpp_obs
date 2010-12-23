@@ -34,7 +34,7 @@ class TimeSlicedDispatcher : public cSimpleModule
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
-    virtual void sentBurst(cMessage *msg);
+    virtual void sendBurst(cMessage *msg);
     virtual void receiveBurst(cMessage *msg);
 };
 

@@ -21,7 +21,6 @@ package omnetpp_obs.edge;
 moduleinterface BurstDispatcher
 {
     parameters:
-        double timeslot @unit("s");
     	@display("i=block/app");
 	gates:
         input in[];

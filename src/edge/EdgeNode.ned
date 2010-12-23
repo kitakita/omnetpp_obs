@@ -58,10 +58,14 @@ module EdgeNode
                 @display("p=365,50");
         }
         disassembler: BurstDisassembler {
-            @display("p=250,120");
+            parameters:
+                myAddress = myAddress;
+            	@display("p=250,120");
         }
         sink: PacketSink {
-            @display("p=50,120");
+            parameters:
+                myAddress = myAddress;
+            	@display("p=50,120");
         }
         scheduler: <schedulerType> like BurstScheduler {
             @display("p=250,50");

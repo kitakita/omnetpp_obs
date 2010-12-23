@@ -27,6 +27,7 @@ class BurstDisassembler : public cSimpleModule
   protected:
 	IPvXAddress myAddress;
 	int numBursts;
+	int numBCPs;
 	int64 numBits;
 	double packetsPreBurst;
 	double burstsPerSec;

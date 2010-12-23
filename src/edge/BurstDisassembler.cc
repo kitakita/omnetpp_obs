@@ -25,12 +25,14 @@ void BurstDisassembler::initialize()
 {
 	myAddress = IPAddressResolver().resolve(par("myAddress"));
 	numBursts = 0;
+	numBCPs = 0;
 	numBits = 0;
 	packetsPreBurst = 0;
 	burstsPerSec = 0;
 	avrDelay = 0;
 
 	WATCH(numBursts);
+	WATCH(numBCPs = 0);
 	WATCH(numBits);
 	WATCH(packetsPreBurst);
 	WATCH(burstsPerSec);
@@ -85,11 +87,16 @@ void BurstDisassembler::handleBurstControlPacket(cMessage *msg)
 {
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
-	simtime_t creation = bcp->getCreationTime();
-	simtime_t arrival = bcp->getBurstArrivalTime() + bcp->getBurstlength();
-	simtime_t delay = arrival - creation;
+	if (myAddress == bcp->getDestAddresss())
+	{
+		numBCPs++;
 
-	avrDelay = (avrDelay * (((double)numBursts - 1) / (double)numBursts)) + (delay / (double)numBursts);
+		simtime_t creation = bcp->getCreationTime();
+		simtime_t arrival = bcp->getBurstArrivalTime() + bcp->getBurstlength();
+		simtime_t delay = arrival - creation;
+
+		avrDelay = (avrDelay * (((double)numBCPs - 1) / (double)numBCPs)) + (delay / (double)numBCPs);
+	}
 
 	delete msg;
 }

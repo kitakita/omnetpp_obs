@@ -28,7 +28,7 @@ void TimeSlicedDispatcher::initialize()
 	oft = OffsetTableAccess().get();
 	bsc = BurstSchedulerAccess().get();
 	timeslot = par("timeslot");
-	cDatarateChannel *c = check_and_cast<cDatarateChannel *>(gate("burstg$o", 0)->getChannel());
+	cDatarateChannel *c = check_and_cast<cDatarateChannel *>(getParentModule()->gate("burstg$o", 0)->getChannel());
 	datarate = c->getDatarate();
 }
 
@@ -36,12 +36,12 @@ void TimeSlicedDispatcher::handleMessage(cMessage *msg)
 {
 	std::string name = msg->getArrivalGate()->getName();
 	if (name == "in")
-		sentBurst(msg);
+		sendBurst(msg);
 	else
 		receiveBurst(msg);
 }
 
-void TimeSlicedDispatcher::sentBurst(cMessage *msg)
+void TimeSlicedDispatcher::sendBurst(cMessage *msg)
 {
 	Burst *bst = check_and_cast<Burst *>(msg);
 

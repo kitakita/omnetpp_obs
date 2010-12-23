@@ -15,7 +15,7 @@
 class BurstSchedulerAccess : public ModuleAccess<IBurstScheduler>
 {
   public:
-	BurstSchedulerAccess() : ModuleAccess<IBurstScheduler>("burstScheduler") {}
+	BurstSchedulerAccess() : ModuleAccess<IBurstScheduler>("scheduler") {}
 };
 
 #endif /* BURSTSCHEDULERACCESS_H_ */

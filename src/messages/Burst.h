@@ -41,8 +41,8 @@ class Burst : public Burst_Base, public IBurst
 	virtual int dropPacketsFromBack(int byteLength);
 
 	int getNumPackets() const { return packets->length(); }
-	int64 getBitLength() const { return packets->getByteLength(); }
-	int64 getByteLength() const { return packets->getBitLength(); }
+	int64 getBitLength() const { return packets->getBitLength(); }
+	int64 getByteLength() const { return packets->getByteLength(); }
 };
 
 #endif /* BURST_H_ */

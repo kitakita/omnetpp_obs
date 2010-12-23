@@ -71,7 +71,7 @@ void PacketGenerator::handleMessage(cMessage *msg)
 
 IPvXAddress PacketGenerator::chooseDestAddr()
 {
-    int k = intrand(destAddresses.size());
+    int k = intuniform(0, (double)(destAddresses.size() - 1));
     return destAddresses[k];
 }
 

@@ -41,8 +41,8 @@ int PacketClassifier::getQueueIndex(cMessage *msg)
 
 	destAddresses.push_back(destAddr);
 
-	if ((int)destAddresses.size() > gate("out")->getVectorSize())
-		opp_error("Queue index is out of range. (Destinations: %d, Gates: %d)", destAddresses.size(), gate("out")->getVectorSize());
+//	if ((int)destAddresses.size() > gate("out")->getVectorSize())
+//		opp_error("Queue index is out of range. (Destinations: %d, Gates: %d)", destAddresses.size(), gate("out")->getVectorSize());
 
 	return destAddresses.size() - 1;
 }
