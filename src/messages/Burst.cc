@@ -29,7 +29,6 @@ Burst::~Burst()
 {
 	while (!packets->empty())
 		delete packets->pop();
-	delete packets;
 }
 
 void Burst::initialize()

@@ -28,8 +28,7 @@ void TimeSlicedDispatcher::initialize()
 	oft = OffsetTableAccess().get();
 	bsc = BurstSchedulerAccess().get();
 	timeslot = par("timeslot");
-	cDatarateChannel *c = check_and_cast<cDatarateChannel *>(getParentModule()->gate("burstg$o", 0)->getChannel());
-	datarate = c->getDatarate();
+	datarate = par("datarate");
 }
 
 void TimeSlicedDispatcher::handleMessage(cMessage *msg)
@@ -71,11 +70,12 @@ void TimeSlicedDispatcher::sendBurst(cMessage *msg)
 		burstSendingTime = nextTimeslot;
 
 	bcp->setSrcAddress(src);
-	bcp->setDestAddresss(dest);
+	bcp->setDestAddress(dest);
 	bcp->setBurstArrivalTime(burstSendingTime);
 	bcp->setBurstlength(burstlength);
 	bcp->setBurstIngressPort(0);
 	bcp->setBurstIngressChannel(-1);
+	bcp->setBurst(bst);
 
 	ScheduleResult res;
 	while ((res = bsc->schedule(0, bcp)).channel < 0)

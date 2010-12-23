@@ -25,7 +25,7 @@
  * message BurstControlPacket {
  *     @customize(true);  
  *     IPAddress srcAddress;
- *     IPAddress destAddresss;
+ *     IPAddress destAddress;
  *     simtime_t burstArrivalTime;
  *     simtime_t burstlength;
  *     int burstIngressPort;
@@ -59,7 +59,7 @@ class BurstControlPacket_Base : public ::cMessage
 {
   protected:
     ::IPAddress srcAddress_var;
-    ::IPAddress destAddresss_var;
+    ::IPAddress destAddress_var;
     simtime_t burstArrivalTime_var;
     simtime_t burstlength_var;
     int burstIngressPort_var;
@@ -84,9 +84,9 @@ class BurstControlPacket_Base : public ::cMessage
     virtual IPAddress& getSrcAddress();
     virtual const IPAddress& getSrcAddress() const {return const_cast<BurstControlPacket_Base*>(this)->getSrcAddress();}
     virtual void setSrcAddress(const IPAddress& srcAddress_var);
-    virtual IPAddress& getDestAddresss();
-    virtual const IPAddress& getDestAddresss() const {return const_cast<BurstControlPacket_Base*>(this)->getDestAddresss();}
-    virtual void setDestAddresss(const IPAddress& destAddresss_var);
+    virtual IPAddress& getDestAddress();
+    virtual const IPAddress& getDestAddress() const {return const_cast<BurstControlPacket_Base*>(this)->getDestAddress();}
+    virtual void setDestAddress(const IPAddress& destAddress_var);
     virtual simtime_t getBurstArrivalTime() const;
     virtual void setBurstArrivalTime(simtime_t burstArrivalTime_var);
     virtual simtime_t getBurstlength() const;

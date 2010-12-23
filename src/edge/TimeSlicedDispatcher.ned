@@ -22,6 +22,7 @@ simple TimeSlicedDispatcher like BurstDispatcher
 {
     parameters:
         double timeslot @unit("s");
+        double datarate @unit("bps") = default(10Gbps);
         @display("i=block/classifier2");
     gates:
         input in[];

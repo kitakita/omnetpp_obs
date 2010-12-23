@@ -15,7 +15,7 @@
 
 package omnetpp_obs.simulations.test.twoedges;
 
-import ned.DatarateChannel;
+import ned.DelayChannel;
 import omnetpp_obs.edge.EdgeNode;
 
 //
@@ -27,9 +27,8 @@ network TwoEdges
         int numDataChannels;
         @display("bgl=2");
     types:
-        channel C extends DatarateChannel
+        channel C extends DelayChannel
         {
-            datarate = 10Gbps;
             delay = 0.5ms;
         }
     submodules:

@@ -13,16 +13,29 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package omnetpp_obs.common;
+package omnetpp_obs.simulations.test.moduletest;
+
+import inet.base.Sink;
+import omnetpp_obs.edge.EdgeNode;
+import omnetpp_obs.common.BurstScheduler;
+import omnetpp_obs.edge.PacketGenerator;
+import omnetpp_obs.edge.TimeSlicedDispatcher;
+import omnetpp_obs.edge.PacketSink;
+import omnetpp_obs.edge.PacketClassifier;
+import omnetpp_obs.edge.OffsetTable;
+import omnetpp_obs.edge.MixedTimerBurstlengthBasedQueue;
+import omnetpp_obs.common.HorizonScheduler;
+import omnetpp_obs.edge.BurstDisassembler;
+
 
 //
-// TODO auto-generated module
+// TODO Auto-generated network
 //
-simple HorizonScheduler like BurstScheduler
+network Moduletest
 {
-    parameters:
-        bool droppable = default(true);
-        bool waveConversion = default(true);
-        double datarate @unit("bps") = default(10Gbps);
-		@display("i=block/table2");
+    submodules:
+        edgeNode: EdgeNode {
+            @display("p=149,101");
+        }
+    connections allowunconnected:
 }

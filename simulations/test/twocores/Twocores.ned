@@ -15,7 +15,7 @@
 
 package omnetpp_obs.simulations.test.twocores;
 
-import ned.DatarateChannel;
+import ned.DelayChannel;
 import omnetpp_obs.core.CoreNode;
 import omnetpp_obs.edge.EdgeNode;
 
@@ -29,12 +29,10 @@ network Twocores
         int numLinkedNodes = 2;
     	@display("bgl=2");
     types:
-        channel IC extends DatarateChannel {
-            datarate = 10Gbps;
+        channel IC extends DelayChannel {
             delay = 0;
         }
-        channel C extends DatarateChannel {
-            datarate = 10Gbps;
+        channel C extends DelayChannel {
             delay = 0.5ms;
         }
     submodules:

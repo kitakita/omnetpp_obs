@@ -1,14 +1,14 @@
 version 2
-run Dest4_Channel1_Lambda1us-0-20101223-12:27:18-6268
+run Dest4_Channel1_Lambda1us-0-20101224-02:58:59-4844
 attr configname Dest4_Channel1_Lambda1us
-attr datetime 20101223-12:27:18
+attr datetime 20101224-02:58:59
 attr experiment Dest4_Channel1_Lambda1us
 attr inifile C:/work/home/OMNeT++Projects/omnetpp_obs/simulations/test/twoedges/omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network TwoEdges
-attr processid 6268
+attr processid 4844
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -24,10 +24,10 @@ scalar TwoEdges.edge0.sink 	numBits 	0
 scalar TwoEdges.edge0.sink 	throughput 	0
 scalar TwoEdges.edge0.sink 	packetsPerSec 	0
 scalar TwoEdges.edge1.disassembler 	numBursts 	20
-scalar TwoEdges.edge1.disassembler 	numBits 	3118750
+scalar TwoEdges.edge1.disassembler 	numBits 	24950000
 scalar TwoEdges.edge1.disassembler 	packetsPreBurst 	124.75
-scalar TwoEdges.edge1.disassembler 	burstsPerSec 	19.221528111485
+scalar TwoEdges.edge1.disassembler 	burstsPerSec 	19.790122726161
 scalar TwoEdges.edge1.sink 	numPackets 	2495
 scalar TwoEdges.edge1.sink 	numBits 	24950000
-scalar TwoEdges.edge1.sink 	throughput 	23978856.319077
-scalar TwoEdges.edge1.sink 	packetsPerSec 	2397.8856319077
+scalar TwoEdges.edge1.sink 	throughput 	24688178.100886
+scalar TwoEdges.edge1.sink 	packetsPerSec 	2468.8178100886

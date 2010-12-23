@@ -54,7 +54,7 @@ BurstControlPacket_Base& BurstControlPacket_Base::operator=(const BurstControlPa
     if (this==&other) return *this;
     cMessage::operator=(other);
     this->srcAddress_var = other.srcAddress_var;
-    this->destAddresss_var = other.destAddresss_var;
+    this->destAddress_var = other.destAddress_var;
     this->burstArrivalTime_var = other.burstArrivalTime_var;
     this->burstlength_var = other.burstlength_var;
     this->burstIngressPort_var = other.burstIngressPort_var;
@@ -67,7 +67,7 @@ void BurstControlPacket_Base::parsimPack(cCommBuffer *b)
 {
     cMessage::parsimPack(b);
     doPacking(b,this->srcAddress_var);
-    doPacking(b,this->destAddresss_var);
+    doPacking(b,this->destAddress_var);
     doPacking(b,this->burstArrivalTime_var);
     doPacking(b,this->burstlength_var);
     doPacking(b,this->burstIngressPort_var);
@@ -79,7 +79,7 @@ void BurstControlPacket_Base::parsimUnpack(cCommBuffer *b)
 {
     cMessage::parsimUnpack(b);
     doUnpacking(b,this->srcAddress_var);
-    doUnpacking(b,this->destAddresss_var);
+    doUnpacking(b,this->destAddress_var);
     doUnpacking(b,this->burstArrivalTime_var);
     doUnpacking(b,this->burstlength_var);
     doUnpacking(b,this->burstIngressPort_var);
@@ -97,14 +97,14 @@ void BurstControlPacket_Base::setSrcAddress(const IPAddress& srcAddress_var)
     this->srcAddress_var = srcAddress_var;
 }
 
-IPAddress& BurstControlPacket_Base::getDestAddresss()
+IPAddress& BurstControlPacket_Base::getDestAddress()
 {
-    return destAddresss_var;
+    return destAddress_var;
 }
 
-void BurstControlPacket_Base::setDestAddresss(const IPAddress& destAddresss_var)
+void BurstControlPacket_Base::setDestAddress(const IPAddress& destAddress_var)
 {
-    this->destAddresss_var = destAddresss_var;
+    this->destAddress_var = destAddress_var;
 }
 
 simtime_t BurstControlPacket_Base::getBurstArrivalTime() const
@@ -238,7 +238,7 @@ const char *BurstControlPacketDescriptor::getFieldName(void *object, int field) 
     }
     static const char *fieldNames[] = {
         "srcAddress",
-        "destAddresss",
+        "destAddress",
         "burstArrivalTime",
         "burstlength",
         "burstIngressPort",
@@ -253,7 +253,7 @@ int BurstControlPacketDescriptor::findField(void *object, const char *fieldName)
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='s' && strcmp(fieldName, "srcAddress")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "destAddresss")==0) return base+1;
+    if (fieldName[0]=='d' && strcmp(fieldName, "destAddress")==0) return base+1;
     if (fieldName[0]=='b' && strcmp(fieldName, "burstArrivalTime")==0) return base+2;
     if (fieldName[0]=='b' && strcmp(fieldName, "burstlength")==0) return base+3;
     if (fieldName[0]=='b' && strcmp(fieldName, "burstIngressPort")==0) return base+4;
@@ -320,7 +320,7 @@ std::string BurstControlPacketDescriptor::getFieldAsString(void *object, int fie
     BurstControlPacket_Base *pp = (BurstControlPacket_Base *)object; (void)pp;
     switch (field) {
         case 0: {std::stringstream out; out << pp->getSrcAddress(); return out.str();}
-        case 1: {std::stringstream out; out << pp->getDestAddresss(); return out.str();}
+        case 1: {std::stringstream out; out << pp->getDestAddress(); return out.str();}
         case 2: return double2string(pp->getBurstArrivalTime());
         case 3: return double2string(pp->getBurstlength());
         case 4: return long2string(pp->getBurstIngressPort());
@@ -380,7 +380,7 @@ void *BurstControlPacketDescriptor::getFieldStructPointer(void *object, int fiel
     BurstControlPacket_Base *pp = (BurstControlPacket_Base *)object; (void)pp;
     switch (field) {
         case 0: return (void *)(&pp->getSrcAddress()); break;
-        case 1: return (void *)(&pp->getDestAddresss()); break;
+        case 1: return (void *)(&pp->getDestAddress()); break;
         default: return NULL;
     }
 }

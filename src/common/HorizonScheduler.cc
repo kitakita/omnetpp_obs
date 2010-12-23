@@ -23,6 +23,7 @@ void HorizonScheduler::initialize()
 {
 	droppable = par("droppable");
 	waveConversion = par("waveConversion");
+	datarate = par("datarate");
 
 	cModule *parent = getParentModule();
 	int gatesize = parent->gateSize("burstg$o");
@@ -31,9 +32,6 @@ void HorizonScheduler::initialize()
 	for (int i = 0, prev = -1; i < gatesize; i++)
 	{
 		cGate *g = parent->gate("burstg$o", i)->getNextGate();
-		cChannel *ch = parent->gate("burstg$o", i)->getChannel();
-		cDatarateChannel *dc = check_and_cast<cDatarateChannel *>(ch);
-		double datarate = dc->getDatarate();
 		int id = g->getOwnerModule()->getId();
 		if (id != prev)
 		{
@@ -154,18 +152,14 @@ ScheduleResult HorizonScheduler::schedule(int port, cMessage *msg)
 	   << "Burst Arrival Time: " << bcp->getBurstArrivalTime() << " Burstlength: " << bcp->getBurstlength() << endl
 	   << "before";
 	printSchedule(port);
-	ev << endl << "   after";
 
 	ScheduleResult res = getScheduleResult(port, bcp->getArrivalTime());
 
 	if ((res.channel < 0) || (res.dropped && !droppable) || ((res.channel != bcp->getBurstIngressChannel()) && !waveConversion))
 	{
-		ev << " | failed." << endl;
+		ev << endl << "   after" << " | failed." << endl;
 		return res;
 	}
-
-	printSchedule(port);
-	ev << endl;
 
 	Schedule *sc = scheduleTables.at(port).at(res.channel);
 	if (res.dropped)
@@ -175,9 +169,14 @@ ScheduleResult HorizonScheduler::schedule(int port, cMessage *msg)
 		sc->getBurst()->dropPacketsFromBack(droppedByte);
 	}
 
-	sc->setTime(res.offset + bcp->getBurstlength());
-	Burst *bst = check_and_cast<Burst *>(bcp->getBurst());
+	sc->setTime(bcp->getBurstArrivalTime() + bcp->getBurstlength());
+	cMessage *message = bcp->getBurst();
+	Burst *bst = check_and_cast<Burst *>(message);
 	sc->setBurst(bst);
+
+	ev << endl << "   after";
+	printSchedule(port);
+	ev << endl;
 
 	return res;
 }

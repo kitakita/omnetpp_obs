@@ -25,6 +25,7 @@ class HorizonScheduler : public cSimpleModule, public IBurstScheduler
   protected:
 	bool droppable;
 	bool waveConversion;
+	double datarate;
 
 	typedef std::vector<Schedule *> ScheduleTable;
 	typedef std::vector<ScheduleTable> ScheduleTables;

@@ -31,8 +31,7 @@ void AnsyncTimeSlicedDispatcher::initialize()
 	ast = AnsyncSlotTableAccess().get();
 
 	timeslot = par("timeslot");
-	cDatarateChannel *c = check_and_cast<cDatarateChannel *>(getParentModule()->gate("burstg$o", 0)->getChannel());
-	datarate = c->getDatarate();
+	datarate = par("datarate");
 }
 
 void AnsyncTimeSlicedDispatcher::handleMessage(cMessage *msg)
@@ -84,11 +83,12 @@ void AnsyncTimeSlicedDispatcher::sendBurst(cMessage *msg)
 		burstSendingTime = nextTimeslot;
 
 	bcp->setSrcAddress(src);
-	bcp->setDestAddresss(dest);
+	bcp->setDestAddress(dest);
 	bcp->setBurstArrivalTime(burstSendingTime);
 	bcp->setBurstlength(burstlength);
 	bcp->setBurstIngressPort(0);
 	bcp->setBurstIngressChannel(-1);
+	bcp->setBurst(bst);
 
     ScheduleResult res;
     while ((res = bsc->schedule(0, bcp)).channel < 0)

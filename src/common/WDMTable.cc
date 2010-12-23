@@ -24,19 +24,21 @@ void WDMTable::initialize()
 
 	for (int i = 0, prev = -1; i < gatesize; i++)
 	{
-		cGate *g = parent->gate("burstg$o", i)->getNextGate();
-		int id = g->getOwnerModule()->getId();
+		cGate *g = parent->gate("burstg$o", i);
+		int id = g->getNextGate()->getOwnerModule()->getId();
 		if (id != prev)
 		{
 			prev = id;
 			numChannelTable.push_back(0);
-			cDatarateChannel *c = check_and_cast<cDatarateChannel *>(g->getChannel());
+			cDelayChannel *c = check_and_cast<cDelayChannel *>(g->getChannel());
 			transmissionDelayTable.push_back(c->getDelay());
 		}
 		numChannelTable.back() += 1;
 	}
 
 	numLinkedNodes = numChannelTable.size();
+
+	printTables();
 }
 
 void WDMTable::handleMessage(cMessage *msg)
@@ -44,7 +46,21 @@ void WDMTable::handleMessage(cMessage *msg)
     opp_error("WDMTable cannot receive any messages.");
 }
 
+void WDMTable::printTables()
+{
+	ev << "Number of linked nodes is " << numLinkedNodes << endl;
+	ev << "Channel table";
+	NumChannelTable::iterator it = numChannelTable.begin();
+	while (it != numChannelTable.end())
+		ev << " | " << *it++;
+	ev << endl << "Transmision delay table";
+	TransmissionDelayTable::iterator it2 = transmissionDelayTable.begin();
+	while (it2 != transmissionDelayTable.end())
+		ev << " | " << *it2++;
+	ev << endl;
+}
+
 int WDMTable::getGateIndex(int port, int channel)
 {
-	return (port * numLinkedNodes) + channel;
+	return (port * numChannelTable.at(port)) + channel;
 }

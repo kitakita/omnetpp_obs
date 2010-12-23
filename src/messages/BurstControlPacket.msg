@@ -24,7 +24,7 @@ class noncobject IPAddress;
 message BurstControlPacket {
     @customize(true);  // see the generated C++ header for more info
     IPAddress srcAddress;
-    IPAddress destAddresss;
+    IPAddress destAddress;
     simtime_t burstArrivalTime;
     simtime_t burstlength;
     int burstIngressPort;

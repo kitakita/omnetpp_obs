@@ -15,6 +15,7 @@
 
 package omnetpp_obs.core;
 
+import omnetpp_obs.common.WDMTable;
 import omnetpp_obs.common.HorizonScheduler;
 
 module CoreNode
@@ -39,15 +40,18 @@ module CoreNode
         }
         opticalSwitchFabric: OpticalSwitchFabric {
             parameters:
-                @display("p=165,170");
+                @display("p=60,124");
             gates:
                 burstg[sizeof(burstg)];
         }
         controlUnit: ControlUnit {
             parameters:
-                @display("p=165,90");
+                @display("p=165,124");
             gates:
                 bcpg[sizeof(bcpg)];
+        }
+        wdmTable: WDMTable {
+            @display("p=165,40");
         }
     connections:
         for i=0..sizeof(bcpg)-1 {

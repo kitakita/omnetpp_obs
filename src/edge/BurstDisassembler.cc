@@ -87,7 +87,7 @@ void BurstDisassembler::handleBurstControlPacket(cMessage *msg)
 {
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
-	if (myAddress == bcp->getDestAddresss())
+	if (myAddress == bcp->getDestAddress())
 	{
 		numBCPs++;
 

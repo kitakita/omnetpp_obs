@@ -65,7 +65,8 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 
 	int inPort = bcp->getBurstIngressPort();
 	int inChannel = bcp->getBurstIngressChannel();
-	int outPort = crt->getSendPort(bcp->getDestAddresss());
+	std::string str = bcp->getDestAddress().str();
+	int outPort = crt->getSendPort(bcp->getDestAddress());
 	ScheduleResult res = scd->schedule(outPort, bcp);
 	int outChannel = res.channel;
 
@@ -82,7 +83,7 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 		ev << bcp << " schedule success." << endl;
 
 		int inGateIndex = wdm->getGateIndex(inPort, inChannel);
-		int outGateIndex = wdm->getGateIndex(inPort, inChannel);
+		int outGateIndex = wdm->getGateIndex(outPort, outChannel);
 
 		ConnectionEvent *connect = new ConnectionEvent("ConnectionEvent");
 		connect->setIn(inGateIndex);
@@ -92,7 +93,7 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 		ev << "Burst sending schedule at " << bcp->getBurstArrivalTime() << " to " << bcp->getBurstArrivalTime() + bcp->getBurstlength() << endl;
 
 		bcp->setBurstArrivalTime(bcp->getBurstArrivalTime() + wdm->getTransmissionDelay(outPort));
-		bcp->setBurstIngressPort(crt->getReceivePort(bcp->getDestAddresss()));
+		bcp->setBurstIngressPort(crt->getReceivePort(bcp->getDestAddress()));
 		bcp->setBurstIngressChannel(outChannel);
 
 		sendDelayed(bcp, processDelay, "bcpg$o", outPort);

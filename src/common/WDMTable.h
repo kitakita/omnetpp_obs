@@ -35,6 +35,8 @@ class WDMTable : public cSimpleModule
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
+    virtual void printTables();
+
   public:
     int getNumLinkedNodes() { return numLinkedNodes; }
     virtual int getGateIndex(int port, int channel);
