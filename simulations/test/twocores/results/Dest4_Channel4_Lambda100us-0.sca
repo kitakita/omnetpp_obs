@@ -1,14 +1,14 @@
 version 2
-run Dest4_Channel4_Lambda100us-0-20101224-03:58:41-4256
+run Dest4_Channel4_Lambda100us-0-20101224-12:00:31-2664
 attr configname Dest4_Channel4_Lambda100us
-attr datetime 20101224-03:58:41
+attr datetime 20101224-12:00:31
 attr experiment Dest4_Channel4_Lambda100us
 attr inifile C:/work/home/OMNeT++Projects/omnetpp_obs/simulations/test/twocores/omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network Twocores
-attr processid 4256
+attr processid 2664
 attr repetition 0
 attr replication #0
 attr resultdir results
