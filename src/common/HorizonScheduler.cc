@@ -167,17 +167,11 @@ ScheduleResult HorizonScheduler::schedule(int port, cMessage *msg)
 	{
 		int droppedByte = res.offset.dbl() * sc->getDatarate();
 		ev << "Packet dropped in " << droppedByte << " byte." << endl;
-		if (dynamic_cast<Burst *>(bcp->getBurst()) != NULL)
-		{
-			Burst *bst = check_and_cast<Burst *>(sc->getBurst());
-			bst->dropPacketsFromBack(droppedByte);
-		}
+		Burst *bst = check_and_cast<Burst *>(sc->getBurst());
+		bst->dropPacketsFromBack(droppedByte);
 	}
 
 	sc->setTime(bcp->getBurstArrivalTime() + bcp->getBurstlength());
-
-	if (dynamic_cast<ConnectionEvent *>(bcp->getBurst()) != NULL)
-		return res;
 
 	Burst *bst = check_and_cast<Burst *>(bcp->getBurst());
 	sc->setBurst(bst);

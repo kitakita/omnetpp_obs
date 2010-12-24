@@ -44,22 +44,17 @@ void ControlUnit::handleMessage(cMessage *msg)
 {
 	if (msg->isSelfMessage())
 		handleSelfEvent(msg);
-	else if (dynamic_cast<BurstControlPacket *>(msg) != NULL)
-		handleBurstControlPacket(msg);
-	else if (dynamic_cast<ConnectionEvent *>(msg) != NULL)
-		handleSelfEvent(msg);
 	else
-		opp_error("ControlUnit receive unknown message.");
+		handleBurstControlPacket(msg);
 }
 
 void ControlUnit::handleSelfEvent(cMessage *msg)
 {
 	ConnectionEvent *cue = check_and_cast<ConnectionEvent *>(msg);
 
-	if (cue->getKind() == 0)
-		osf->connect(cue->getIn(), cue->getOut());
-	else
-		osf->disconnect(cue->getIn());
+	ev << "connect port " << cue->getIn() << " to port " << cue->getOut() << endl;
+
+	osf->connect(cue->getIn(), cue->getOut());
 
 	delete msg;
 }
@@ -89,7 +84,9 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 		int inGateIndex = wdm->getGateIndex(inPort, inChannel);
 		int outGateIndex = wdm->getGateIndex(outPort, outChannel);
 
-		ConnectionEvent *connect = new ConnectionEvent("ConnectionEvent");
+		char msgName[48];
+		sprintf(msgName, "%s-connect", bcp->getName());
+		ConnectionEvent *connect = new ConnectionEvent(msgName);
 		connect->setIn(inGateIndex);
 		connect->setOut(outGateIndex);
 		scheduleAt(bcp->getBurstArrivalTime() - guardtime, connect);

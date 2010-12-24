@@ -38,7 +38,7 @@ void OpticalSwitchFabric::handleMessage(cMessage *msg)
 
 	if (port >= 0)
 	{
-		ev << "Optical switch: " << msg->getName() << " through port " << port << " to " << port << "." << endl;
+		ev << "Optical switch: " << msg->getName() << " through port " << index << " to " << port << "." << endl;
 
 		send(msg, "burstg$o", port);
 
@@ -67,15 +67,15 @@ void OpticalSwitchFabric::connect(int in, int out)
 	if ((in >= (int)connectionTable.size()) || (out >= (int)connectionTable.size()))
 		opp_error("Switch index out of range (in:%d, out:%d).", in, out);
 
-	connectionTable.at(in) = out;
-
 	ConnectionTable::iterator it = connectionTable.begin();
 	while(it != connectionTable.end())
 	{
 		if (*it == out)
-			*it = out;
+			*it = -1;
 		it++;
 	}
+
+	connectionTable.at(in) = out;
 
 	printSwitch();
 }
