@@ -95,13 +95,15 @@ ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTi
 	res.offset = arrivalTime - sc->getTime();
 	res.channel = 0;
 	res.dropped = false;
+	simtime_t offset;
 
 	if (droppable && res.offset < 0 && res.offset + sc->getDroppableTimelength() < 0)
 		res.channel = -1;
 
 	for (unsigned int i = 1; i < scheduleTables.at(port).size(); i++)
 	{
-		simtime_t offset = arrivalTime - sc->getTime();
+		sc = scheduleTables.at(port).at(i);
+		offset = arrivalTime - sc->getTime();
 		if (offset > 0)
 		{
 			if (res.offset < 0 || (res.offset > 0 && res.offset > offset))
@@ -120,6 +122,7 @@ ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTi
 					{
 						res.offset = offset;
 						res.channel = i;
+						res.dropped = true;
 					}
 				}
 				else
