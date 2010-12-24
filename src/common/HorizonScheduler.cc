@@ -99,7 +99,7 @@ ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTi
 	simtime_t offset;
 
 	if (droppable && res.offset < 0 && res.offset + sc->getBurstDroppableTimelength() >= 0)
-		res.channel = true;
+		res.dropped = true;
 
 	for (unsigned int i = 1; i < scheduleTables.at(port).size(); i++)
 	{
