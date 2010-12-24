@@ -29,5 +29,5 @@ message BurstControlPacket {
     simtime_t burstlength;
     int burstIngressPort;
     int burstIngressChannel;
-    int burstDropableLength;
+    int burstDroppableByteLength;
 }

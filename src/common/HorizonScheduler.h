@@ -20,6 +20,13 @@
 #include "IBurstScheduler.h"
 #include "Schedule.h"
 
+struct ScheduleResult
+{
+    simtime_t offset;
+    int channel;
+    bool dropped;
+};
+
 class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 {
   protected:
@@ -40,7 +47,7 @@ class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 	virtual ScheduleResult getScheduleResult(int port, simtime_t arrivalTime);
 
   public:
-	virtual ScheduleResult schedule(int port, cMessage *msg);
+	virtual int schedule(int port, cMessage *msg);
 };
 
 #endif

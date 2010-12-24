@@ -66,8 +66,7 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 	int inPort = bcp->getBurstIngressPort();
 	int inChannel = bcp->getBurstIngressChannel();
 	int outPort = crt->getSendPort(bcp->getDestAddress());
-	ScheduleResult res = scd->schedule(outPort, bcp);
-	int outChannel = res.channel;
+	int outChannel = scd->schedule(outPort, bcp);
 
 	if (outChannel < 0)
 	{
