@@ -23,7 +23,7 @@ class Schedule {
   protected:
 	simtime_t time;
 	Burst *bst;
-	int droppableByteLength;
+	int burstDroppableByteLength;
 	double datarate;
 
   public:
@@ -36,11 +36,11 @@ class Schedule {
 	Burst *getBurst() { return bst; }
 	void setBurst(Burst *b) { bst = b; }
 
-	int getDroppableByteLength() { return droppableByteLength; }
-	int getDroppableBitLength() { return droppableByteLength * 8; }
-	simtime_t getDroppableTimelength() { return (droppableByteLength * 8) / datarate; }
-	void setDroppableByteLength(int byte) { droppableByteLength = byte; }
-	void setDroppableBitLength(int bit) { droppableByteLength = bit / 8; }
+	int getBurstDroppableByteLength() { return burstDroppableByteLength; }
+	int getBurstDroppableBitLength() { return burstDroppableByteLength * 8; }
+	simtime_t getBurstDroppableTimelength() { return (burstDroppableByteLength * 8) / datarate; }
+	void setBurstDroppableByteLength(int byte) { burstDroppableByteLength = byte; }
+	void setBurstDroppableBitLength(int bit) { burstDroppableByteLength = bit / 8; }
 
 	double getDatarate() { return datarate; }
 	void setDatarate(double rate) { datarate = rate; }

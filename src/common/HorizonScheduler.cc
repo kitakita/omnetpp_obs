@@ -66,6 +66,7 @@ void HorizonScheduler::printSchedule(int port)
 		sprintf(schedule, "%16.12f", scheduleTables.at(port).at(i)->getTime().dbl());
 		ev << " | " << schedule;
 	}
+	ev << endl;
 }
 
 void HorizonScheduler::updateDisplayString()
@@ -90,60 +91,54 @@ void HorizonScheduler::updateDisplayString()
 
 ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTime)
 {
-	Schedule *sc;
-	ScheduleResult st;
+	Schedule *sc = scheduleTables.at(port).at(0);
+	ScheduleResult res;
+	res.offset = arrivalTime - sc->getTime();
+	res.channel = 0;
+	res.dropped = false;
+	simtime_t offset;
 
-	int i = 0;
-	int size = scheduleTables.at(port).size();
-	do
+	if (droppable && res.offset < 0 && res.offset + sc->getBurstDroppableTimelength() >= 0)
+		res.dropped = true;
+
+	for (unsigned int i = 1; i < scheduleTables.at(port).size(); i++)
 	{
 		sc = scheduleTables.at(port).at(i);
-		st.offset = arrivalTime - sc->getTime();
-		st.channel = 0;
-		st.dropped = false;
-
-		if (droppable)
-		{
-			if (!((st.offset < 0) && (st.offset + sc->getDroppableTimelength() < 0)))
-				st.channel = -1;
-		}
-
-		simtime_t offset = arrivalTime - sc->getTime();
+		offset = arrivalTime - sc->getTime();
 		if (offset > 0)
 		{
-			if (((st.offset > 0) && (st.offset > offset)) || (st.offset < 0))
+			if (res.offset < 0 || (res.offset > 0 && res.offset > offset))
 			{
-				st.offset = offset;
-				st.channel = i;
+				res.offset = offset;
+				res.channel = i;
 			}
 		}
 		else
 		{
-			if (droppable)
+			if (res.offset < 0 && res.offset < offset)
 			{
-				if ((st.offset < offset) && (offset + sc->getDroppableTimelength() < 0))
+				if (droppable)
 				{
-					st.offset = offset;
-					st.channel = i;
+					if (offset + sc->getBurstDroppableTimelength() >= 0)
+					{
+						res.offset = offset;
+						res.channel = i;
+						res.dropped = true;
+					}
 				}
-			}
-			else
-			{
-				if ((st.offset < 0) && (st.offset < offset))
+				else
 				{
-					st.offset = offset;
-					st.channel = i;
+					res.offset = offset;
+					res.channel = i;
 				}
 			}
 		}
+	}
 
-		i++;
-	} while (i < size);
-
-	return st;
+	return res;
 }
 
-ScheduleResult HorizonScheduler::schedule(int port, cMessage *msg)
+int HorizonScheduler::schedule(int port, cMessage *msg)
 {
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
@@ -151,34 +146,41 @@ ScheduleResult HorizonScheduler::schedule(int port, cMessage *msg)
 
 	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
 	   << "Burst Arrival Time: " << bcp->getBurstArrivalTime() << " Burstlength: " << bcp->getBurstlength() << endl
-	   << "before";
+	   << "\tbefore";
 	printSchedule(port);
 
-	ScheduleResult res = getScheduleResult(port, bcp->getArrivalTime());
+	ScheduleResult res = getScheduleResult(port, bcp->getBurstArrivalTime());
 
-	if ((res.channel < 0) || (res.dropped && !droppable) || ((res.channel != bcp->getBurstIngressChannel()) && !waveConversion))
+	if (!waveConversion && res.channel != bcp->getBurstIngressChannel())
 	{
-		ev << endl << "   after" << " | failed." << endl;
-		return res;
+		ev << endl << "\tafter" << " | failed." << endl;
+		return -1;
 	}
 
 	Schedule *sc = scheduleTables.at(port).at(res.channel);
-	if (res.dropped)
+
+	if (res.offset < 0)
 	{
-		int droppedByte = res.offset.dbl() * sc->getDatarate();
-		ev << "Packet dropped in " << droppedByte << " byte." << endl;
-		Burst *bst = check_and_cast<Burst *>(sc->getBurst());
-		bst->dropPacketsFromBack(droppedByte);
+		if (res.dropped)
+		{
+			int dropByteLength = res.offset.dbl() * sc->getDatarate();
+			ev << "Packet dropped in " << dropByteLength << " byte (" << res.offset << " [s])." << endl;
+			Burst *bst = check_and_cast<Burst *>(sc->getBurst());
+			bst->dropPacketsFromBack(dropByteLength);
+		}
+		else
+		{
+			ev << endl << "\tafter" << " | failed." << endl;
+			return -1;
+		}
 	}
 
 	sc->setTime(bcp->getBurstArrivalTime() + bcp->getBurstlength());
+	sc->setBurst(check_and_cast<Burst *>(bcp->getBurst()));
+	sc->setBurstDroppableByteLength(bcp->getBurstDroppableByteLength());
 
-	Burst *bst = check_and_cast<Burst *>(bcp->getBurst());
-	sc->setBurst(bst);
-
-	ev << endl << "   after";
+	ev << endl << "\tafter";
 	printSchedule(port);
-	ev << endl;
 
-	return res;
+	return res.channel;
 }

@@ -3,17 +3,10 @@
 
 #include <omnetpp.h>
 
-struct ScheduleResult
-{
-    simtime_t offset;
-    int channel;
-    bool dropped;
-};
-
 class IBurstScheduler
 {
   public:
-	virtual ScheduleResult schedule(int port, cMessage *msg) = 0;
+	virtual int schedule(int port, cMessage *msg) = 0;
 };
 
 #endif /* IBURSTSCHEDULER_H_ */

@@ -57,17 +57,21 @@ void TimeSlicedDispatcher::sendBurst(cMessage *msg)
 	simtime_t nextTimeslot = timeslot * ((int)(burstSendingTime / timeslot) + 1);
 	simtime_t burstlength = bst->getBitLength() / datarate;
 
+	if (burstlength > timeslot)
+	{
+		opp_error("%s length (%f [s]) larger than timeslot (%f [s]).", bst, burstlength.dbl(), timeslot.dbl());
+	}
+
+	if (nextTimeslot < burstSendingTime + burstlength)
+	{
+		burstSendingTime = nextTimeslot;
+	}
+
 	ev << "Dispatcher send burst." << endl
 	   << "bcpoffset: " << offset << " | "
 	   << "sendingtime: " << burstSendingTime << " | "
-	   << "burstlength" << burstlength << " | "
+	   << "burstlength: " << burstlength << " | "
 	   << "nexttimeslot: " << nextTimeslot << " | " << endl;
-
-	if (burstlength > timeslot)
-		opp_error("%s length (%f [s]) larger than timeslot (%f [s]).", bst, burstlength.dbl(), timeslot.dbl());
-
-	if (nextTimeslot < burstSendingTime + burstlength)
-		burstSendingTime = nextTimeslot;
 
 	bcp->setSrcAddress(src);
 	bcp->setDestAddress(dest);
@@ -77,8 +81,8 @@ void TimeSlicedDispatcher::sendBurst(cMessage *msg)
 	bcp->setBurstIngressChannel(-1);
 	bcp->setBurst(bst);
 
-	ScheduleResult res;
-	while ((res = bsc->schedule(0, bcp)).channel < 0)
+	int channel;
+	while ((channel = bsc->schedule(0, bcp)) < 0)
 	{
 		if (burstSendingTime < nextTimeslot)
 			burstSendingTime = nextTimeslot;
@@ -88,11 +92,11 @@ void TimeSlicedDispatcher::sendBurst(cMessage *msg)
 		bcp->setBurstArrivalTime(burstSendingTime);
 	}
 
-    bcp->setBurstIngressChannel(res.channel);
-    bcp->setBurstDropableLength(bst->getBitLength() / 2);
+    bcp->setBurstIngressChannel(channel);
+    bcp->setBurstDroppableByteLength(bst->getBitLength() / 2);
 
     send(bcp, "bcpg$o");
-    sendDelayed(bst, burstSendingTime - simTime(), "burstg$o", res.channel);
+    sendDelayed(bst, burstSendingTime - simTime(), "burstg$o", channel);
 }
 
 void TimeSlicedDispatcher::receiveBurst(cMessage *msg)

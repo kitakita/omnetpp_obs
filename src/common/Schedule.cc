@@ -19,7 +19,7 @@ Schedule::Schedule(double rate)
 {
 	time = 0;
 	bst = NULL;
-	droppableByteLength = 0;
+	burstDroppableByteLength = 0;
 	datarate = rate;
 }
 

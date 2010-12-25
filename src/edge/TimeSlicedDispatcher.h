@@ -28,6 +28,7 @@ class TimeSlicedDispatcher : public cSimpleModule
   protected:
 	OffsetTable *oft;
 	IBurstScheduler *bsc;
+
 	simtime_t timeslot;
 	double datarate;
 
