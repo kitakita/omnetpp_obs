@@ -73,7 +73,6 @@ OBJS = \
     $O/edge/TimeSlicedDispatcher.o \
     $O/messages/Burst.o \
     $O/messages/BurstControlPacket.o \
-    $O/messages/EnsureLengthBurst.o \
     $O/messages/Burst_m.o \
     $O/messages/BurstControlPacket_m.o \
     $O/messages/ConnectionEvent_m.o
