@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include "IBurstScheduler.h"
 #include "Schedule.h"
+#include "WDMTable.h"
 
 struct ScheduleResult
 {
@@ -30,9 +31,10 @@ struct ScheduleResult
 class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 {
   protected:
+	WDMTable *wdm;
+
 	bool droppable;
 	bool waveConversion;
-	double datarate;
 
 	typedef std::vector<Schedule *> ScheduleTable;
 	typedef std::vector<ScheduleTable> ScheduleTables;
@@ -44,10 +46,10 @@ class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 
 	virtual void printSchedule(int outPort);
 	virtual void updateDisplayString();
-	virtual ScheduleResult getScheduleResult(int port, simtime_t arrivalTime);
+	virtual ScheduleResult trySchedule(simtime_t arrivalTime, int port, int channel);
 
   public:
-	virtual int schedule(int port, cMessage *msg);
+	virtual int schedule(cMessage *msg, int port);
 };
 
 #endif

@@ -28,9 +28,8 @@
  *     IPAddress destAddress;
  *     simtime_t burstArrivalTime;
  *     simtime_t burstlength;
- *     int burstIngressPort;
- *     int burstIngressChannel;
- *     int burstDroppableByteLength;
+ *     int burstPort;
+ *     int burstChannel;
  * }
  * </pre>
  *
@@ -62,9 +61,8 @@ class BurstControlPacket_Base : public ::cMessage
     ::IPAddress destAddress_var;
     simtime_t burstArrivalTime_var;
     simtime_t burstlength_var;
-    int burstIngressPort_var;
-    int burstIngressChannel_var;
-    int burstDroppableByteLength_var;
+    int burstPort_var;
+    int burstChannel_var;
 
     // protected and unimplemented operator==(), to prevent accidental usage
     bool operator==(const BurstControlPacket_Base&);
@@ -91,12 +89,10 @@ class BurstControlPacket_Base : public ::cMessage
     virtual void setBurstArrivalTime(simtime_t burstArrivalTime_var);
     virtual simtime_t getBurstlength() const;
     virtual void setBurstlength(simtime_t burstlength_var);
-    virtual int getBurstIngressPort() const;
-    virtual void setBurstIngressPort(int burstIngressPort_var);
-    virtual int getBurstIngressChannel() const;
-    virtual void setBurstIngressChannel(int burstIngressChannel_var);
-    virtual int getBurstDroppableByteLength() const;
-    virtual void setBurstDroppableByteLength(int burstDroppableByteLength_var);
+    virtual int getBurstPort() const;
+    virtual void setBurstPort(int burstPort_var);
+    virtual int getBurstChannel() const;
+    virtual void setBurstChannel(int burstChannel_var);
 };
 
 

@@ -21,6 +21,7 @@ package omnetpp_obs.edge;
 simple AnsyncTimeSlicedDispatcher like BurstDispatcher
 {
     parameters:
+        string ansyncPolicyFile = default("");
         double timeslot @unit("s");
         double datarate @unit("bps") = default(10Gbps);
         @display("i=block/classifier2");

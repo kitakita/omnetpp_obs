@@ -14,23 +14,24 @@
 // 
 
 #include "HorizonScheduler.h"
-#include "BurstControlPacket.h"
-#include "Burst.h"
 #include "ConnectionEvent_m.h"
+#include "Burst.h"
+#include "BurstControlPacket.h"
+#include "WDMTableAccess.h"
 
 Define_Module(HorizonScheduler);
 
 void HorizonScheduler::initialize()
 {
+	wdm = WDMTableAccess().get();
+
 	droppable = par("droppable");
 	waveConversion = par("waveConversion");
-	datarate = par("datarate");
 
 	cModule *parent = getParentModule();
-	int gatesize = parent->gateSize("burstg$o");
+	int size = parent->gateSize("burstg$o");
 
-
-	for (int i = 0, prev = -1; i < gatesize; i++)
+	for (int i = 0, prev = -1; i < size; i++)
 	{
 		cGate *g = parent->gate("burstg$o", i)->getNextGate();
 		int id = g->getOwnerModule()->getId();
@@ -40,7 +41,7 @@ void HorizonScheduler::initialize()
 			ScheduleTable table;
 			scheduleTables.push_back(table);
 		}
-		scheduleTables.back().push_back(new Schedule(datarate));
+		scheduleTables.back().push_back(new Schedule());
 	}
 
 	updateDisplayString();
@@ -54,16 +55,16 @@ void HorizonScheduler::handleMessage(cMessage *msg)
 void HorizonScheduler::finish()
 {
 	for (unsigned int i = 0; i < scheduleTables.size(); i++)
-		for (unsigned int j = 0; j < scheduleTables.at(i).size(); j++)
+		for (unsigned int j = 0; j < scheduleTables[i].size(); j++)
 			delete scheduleTables[i][j];
 }
 
 void HorizonScheduler::printSchedule(int port)
 {
-	for (unsigned int i = 0; i < scheduleTables.at(port).size(); i++)
+	for (unsigned int i = 0; i < scheduleTables[port].size(); i++)
 	{
 		char schedule[32];
-		sprintf(schedule, "%16.12f", scheduleTables.at(port).at(i)->getTime().dbl());
+		sprintf(schedule, "%16.12f", scheduleTables[port][i]->getHorizon().dbl());
 		ev << " | " << schedule;
 	}
 	ev << endl;
@@ -89,22 +90,35 @@ void HorizonScheduler::updateDisplayString()
     getDisplayString().setTagArg("t", 0, tag);
 }
 
-ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTime)
+ScheduleResult HorizonScheduler::trySchedule(simtime_t arrivalTime, int port, int channel = -1)
 {
-	Schedule *sc = scheduleTables.at(port).at(0);
-	ScheduleResult res;
-	res.offset = arrivalTime - sc->getTime();
-	res.channel = 0;
-	res.dropped = false;
-	simtime_t offset;
+	Schedule *sc = channel < 0 ? scheduleTables[port][0] : scheduleTables[port][channel];
+	ScheduleResult res = { arrivalTime - sc->getHorizon(), channel < 0 ? 0 : channel, false};
 
-	if (droppable && res.offset < 0 && res.offset + sc->getBurstDroppableTimelength() >= 0)
+	if (sc->getHorizon() == 0)
+		return res;
+
+	if (droppable && res.offset < 0 && res.offset + sc->getDroppableBitLength() / wdm->getDatarate(port) >= 0)
 		res.dropped = true;
 
-	for (unsigned int i = 1; i < scheduleTables.at(port).size(); i++)
+	if (channel < 0)
+		return res;
+
+	simtime_t offset;
+
+	for (unsigned int i = 1; i < scheduleTables[port].size(); i++)
 	{
-		sc = scheduleTables.at(port).at(i);
-		offset = arrivalTime - sc->getTime();
+		sc = scheduleTables[port][i];
+
+		if (sc->getHorizon() == 0)
+		{
+			res.offset = arrivalTime;
+			res.channel = i;
+			return res;
+		}
+
+		offset = arrivalTime - sc->getHorizon();
+
 		if (offset > 0)
 		{
 			if (res.offset < 0 || (res.offset > 0 && res.offset > offset))
@@ -119,7 +133,7 @@ ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTi
 			{
 				if (droppable)
 				{
-					if (offset + sc->getBurstDroppableTimelength() >= 0)
+					if (offset + sc->getDroppableBitLength() / wdm->getDatarate(port) >= 0)
 					{
 						res.offset = offset;
 						res.channel = i;
@@ -138,49 +152,58 @@ ScheduleResult HorizonScheduler::getScheduleResult(int port, simtime_t arrivalTi
 	return res;
 }
 
-int HorizonScheduler::schedule(int port, cMessage *msg)
+int HorizonScheduler::schedule(cMessage *msg, int port)
 {
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
 	Enter_Method("Schedule %s to port %d (wave conversion %s).", bcp->getName(), port, waveConversion ? "enable" : "disable");
 
-	ev << getFullPath() << " (id=" << getId() << "): " << "port " << port << " schedule start." << endl
-	   << "Burst Arrival Time: " << bcp->getBurstArrivalTime() << " Burstlength: " << bcp->getBurstlength() << endl
-	   << "\tbefore";
-	printSchedule(port);
+	ScheduleResult res;
 
-	ScheduleResult res = getScheduleResult(port, bcp->getBurstArrivalTime());
+	if (waveConversion)
+		res = trySchedule(bcp->getBurstArrivalTime(), port);
+	else
+		res = trySchedule(bcp->getBurstArrivalTime(), port, bcp->getBurstChannel());
 
-	if (!waveConversion && res.channel != bcp->getBurstIngressChannel())
-	{
-		ev << endl << "\tafter" << " | failed." << endl;
-		return -1;
-	}
-
-	Schedule *sc = scheduleTables.at(port).at(res.channel);
+	Schedule *sc = scheduleTables[port][res.channel];
 
 	if (res.offset < 0)
 	{
 		if (res.dropped)
 		{
-			int dropByteLength = res.offset.dbl() * sc->getDatarate();
-			ev << "Packet dropped in " << dropByteLength << " byte (" << res.offset << " [s])." << endl;
 			Burst *bst = check_and_cast<Burst *>(sc->getBurst());
-			bst->dropPacketsFromBack(dropByteLength);
+			int dropByteLength = 8 * res.offset.dbl() * wdm->getDatarate(port);
+			int droppedByteLength = bst->dropPacketsFromBack(dropByteLength);
+			simtime_t burstlength = bst->getBitLength() * wdm->getDatarate(port);
+			int restDroppableByteLength = bcp->getDroppableByteLength() - droppedByteLength;
+
+			bcp->setBurstlength(burstlength);
+			bcp->setDroppableByteLength(restDroppableByteLength);
 		}
 		else
 		{
-			ev << endl << "\tafter" << " | failed." << endl;
-			return -1;
+			res.channel = -1;
 		}
 	}
 
-	sc->setTime(bcp->getBurstArrivalTime() + bcp->getBurstlength());
-	sc->setBurst(check_and_cast<Burst *>(bcp->getBurst()));
-	sc->setBurstDroppableByteLength(bcp->getBurstDroppableByteLength());
-
-	ev << endl << "\tafter";
+	ev << "bef";
 	printSchedule(port);
+
+	sc->setHorizon(bcp->getBurstArrivalTime() + bcp->getBurstlength());
+	sc->setBurst(bcp->getBurst());
+	sc->setDroppableByteLength(bcp->getDroppableByteLength());
+
+	ev << "aft";
+	if (res.channel < 0)
+	{
+		ev << " | failed.";
+		if (ev.isGUI()) bubble("failed");
+	}
+	else
+	{
+		printSchedule(port);
+		if (ev.isGUI()) bubble("success");
+	}
 
 	return res.channel;
 }

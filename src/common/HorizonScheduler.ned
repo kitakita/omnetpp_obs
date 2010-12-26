@@ -23,6 +23,5 @@ simple HorizonScheduler like BurstScheduler
     parameters:
         bool droppable = default(false);
         bool waveConversion = default(true);
-        double datarate @unit("bps") = default(10Gbps);
 		@display("i=block/table2");
 }

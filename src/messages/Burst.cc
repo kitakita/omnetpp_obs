@@ -39,33 +39,33 @@ void Burst::initialize()
 
 int Burst::dropPacketsFromFront(int dropByteLength)
 {
-	int dropedByteLength = 0;
-	while (dropedByteLength <= dropByteLength)
+	int droppedByteLength = 0;
+	while (droppedByteLength <= dropByteLength)
 	{
 		if (packets->empty())
 			break;
 
 		cPacket *pkt = packets->pop();
-		dropedByteLength += pkt->getByteLength();
+		droppedByteLength += pkt->getByteLength();
 		delete pkt;
 	}
 
-	return dropedByteLength - dropByteLength;
+	return droppedByteLength;
 }
 
 int Burst::dropPacketsFromBack(int dropByteLength)
 {
-	int dropedByteLength = 0;
-	while (dropedByteLength <= dropByteLength)
+	int droppedByteLength = 0;
+	while (droppedByteLength <= dropByteLength)
 	{
 		if (packets->empty())
 			break;
 
 		cPacket *pkt = packets->back();
 		packets->remove(pkt);
-		dropedByteLength += pkt->getByteLength();
+		droppedByteLength += pkt->getByteLength();
 		delete pkt;
 	}
 
-	return dropedByteLength - dropByteLength;
+	return droppedByteLength;
 }

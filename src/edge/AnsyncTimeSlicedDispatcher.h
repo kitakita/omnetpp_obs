@@ -27,17 +27,17 @@
 class AnsyncTimeSlicedDispatcher : public cSimpleModule
 {
   protected:
-	OffsetTable *oft;
-	IBurstScheduler *bsc;
-	AnsyncSlotTable *ast;
-	simtime_t timeslot;
-	double datarate;
+//	OffsetTable *oft;
+//	IBurstScheduler *bsc;
+//	AnsyncSlotTable *ast;
+//	simtime_t timeslot;
+//	double datarate;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
-    virtual void sendBurst(cMessage *msg);
-	virtual void receiveBurst(cMessage *msg);
+//    virtual void sendBurst(cMessage *msg);
+//	virtual void receiveBurst(cMessage *msg);
 };
 
 #endif

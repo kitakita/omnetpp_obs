@@ -15,14 +15,9 @@
 
 #include "Schedule.h"
 
-Schedule::Schedule(double rate)
+Schedule::Schedule()
 {
-	time = 0;
-	bst = NULL;
-	burstDroppableByteLength = 0;
-	datarate = rate;
-}
-
-Schedule::~Schedule() {
-	bst = NULL;
+	horizon = 0;
+	burst = NULL;
+	droppableByteLength = 0;
 }

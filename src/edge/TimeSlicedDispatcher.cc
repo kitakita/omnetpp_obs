@@ -20,15 +20,17 @@
 #include "BurstControlPacket.h"
 #include "BurstSchedulerAccess.h"
 #include "OffsetTableAccess.h"
+#include "WDMTableAccess.h"
 
 Define_Module(TimeSlicedDispatcher);
 
 void TimeSlicedDispatcher::initialize()
 {
-	oft = OffsetTableAccess().get();
 	bsc = BurstSchedulerAccess().get();
+	oft = OffsetTableAccess().get();
+	wdm = WDMTableAccess().get();
+
 	timeslot = par("timeslot");
-	datarate = par("datarate");
 }
 
 void TimeSlicedDispatcher::handleMessage(cMessage *msg)
@@ -53,50 +55,45 @@ void TimeSlicedDispatcher::sendBurst(cMessage *msg)
 	IPAddress dest = ctrl->getDestAddr();
 
 	simtime_t offset = oft->getOffset(dest);
-	simtime_t burstSendingTime = simTime() + offset;
-	simtime_t nextTimeslot = timeslot * ((int)(burstSendingTime / timeslot) + 1);
-	simtime_t burstlength = bst->getBitLength() / datarate;
+	simtime_t sendTime;
+	simtime_t burstlength = bst->getBitLength() / wdm->getDatarate(0);
+
+	if ((int)((simTime() + offset) / timeslot) == 0)
+		sendTime = timeslot * (int)((simTime() + offset) / timeslot);
+	else
+		sendTime = timeslot * ((int)((simTime() + offset) / timeslot) + 1);
 
 	if (burstlength > timeslot)
 	{
 		opp_error("%s length (%f [s]) larger than timeslot (%f [s]).", bst, burstlength.dbl(), timeslot.dbl());
 	}
 
-	if (nextTimeslot < burstSendingTime + burstlength)
-	{
-		burstSendingTime = nextTimeslot;
-	}
-
 	ev << "Dispatcher send burst." << endl
-	   << "bcpoffset: " << offset << " | "
-	   << "sendingtime: " << burstSendingTime << " | "
-	   << "burstlength: " << burstlength << " | "
-	   << "nexttimeslot: " << nextTimeslot << " | " << endl;
+	   << "offset: " << offset << " | "
+	   << "sendtime: " << sendTime << " | "
+	   << "burstlength: " << burstlength << " | " << endl;
 
 	bcp->setSrcAddress(src);
 	bcp->setDestAddress(dest);
-	bcp->setBurstArrivalTime(burstSendingTime);
+	bcp->setBurstArrivalTime(sendTime);
 	bcp->setBurstlength(burstlength);
-	bcp->setBurstIngressPort(0);
-	bcp->setBurstIngressChannel(-1);
+	bcp->setBurstPort(0);
+	bcp->setBurstChannel(0);
 	bcp->setBurst(bst);
+	bcp->setDroppableByteLength(bst->getByteLength() / 2);
 
-	int channel;
-	while ((channel = bsc->schedule(0, bcp)) < 0)
+	int channel = -1;
+	while (channel < 0)
 	{
-		if (burstSendingTime < nextTimeslot)
-			burstSendingTime = nextTimeslot;
-		else
-			burstSendingTime += timeslot;
-
-		bcp->setBurstArrivalTime(burstSendingTime);
+		channel = bsc->schedule(bcp, 0);
+		sendTime += timeslot;
+		bcp->setBurstArrivalTime(sendTime);
 	}
 
-    bcp->setBurstIngressChannel(channel);
-    bcp->setBurstDroppableByteLength(bst->getBitLength() / 2);
+    bcp->setBurstChannel(channel);
 
     send(bcp, "bcpg$o");
-    sendDelayed(bst, burstSendingTime - simTime(), "burstg$o", channel);
+    sendDelayed(bst, sendTime - simTime(), "burstg$o", channel);
 }
 
 void TimeSlicedDispatcher::receiveBurst(cMessage *msg)

@@ -18,9 +18,8 @@
 
 #include <omnetpp.h>
 #include "Burst_m.h"
-#include "IBurst.h"
 
-class Burst : public Burst_Base, public IBurst
+class Burst : public Burst_Base
 {
   protected:
 	cPacketQueue *packets;

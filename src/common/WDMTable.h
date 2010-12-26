@@ -24,13 +24,12 @@
 class WDMTable : public cSimpleModule
 {
   protected:
+	typedef std::vector<cChannel *> ChannelTable;
+	typedef std::vector<ChannelTable> ChannelTables;
+	ChannelTables channelTables;
+
 	int numLinkedNodes;
-
-	typedef std::vector<int> NumChannelTable;
-	NumChannelTable numChannelTable;
-
-	typedef std::vector<simtime_t> TransmissionDelayTable;
-	TransmissionDelayTable transmissionDelayTable;
+	double datarate; // TODO
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
@@ -38,9 +37,11 @@ class WDMTable : public cSimpleModule
     virtual void printTables();
 
   public:
-    int getNumLinkedNodes() { return numLinkedNodes; }
+    virtual int getNumLinkedNodes() { return numLinkedNodes; }
     virtual int getGateIndex(int port, int channel);
-    simtime_t getTransmissionDelay(int port) { return transmissionDelayTable.at(port); }
+
+    virtual simtime_t getTransmissionDelay(int port, int channel = 0);
+    double getDatarate(int port, int channel = 0) { return datarate; }
 };
 
 #endif

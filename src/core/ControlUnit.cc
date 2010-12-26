@@ -63,10 +63,10 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 {
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
-	int inPort = bcp->getBurstIngressPort();
-	int inChannel = bcp->getBurstIngressChannel();
+	int inPort = bcp->getBurstPort();
+	int inChannel = bcp->getBurstChannel();
 	int outPort = crt->getSendPort(bcp->getDestAddress());
-	int outChannel = scd->schedule(outPort, bcp);
+	int outChannel = scd->schedule(bcp, outPort);
 
 	if (outChannel < 0)
 	{
@@ -93,8 +93,8 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 		ev << "Burst sending schedule at " << bcp->getBurstArrivalTime() << " to " << bcp->getBurstArrivalTime() + bcp->getBurstlength() << endl;
 
 		bcp->setBurstArrivalTime(bcp->getBurstArrivalTime() + wdm->getTransmissionDelay(outPort));
-		bcp->setBurstIngressPort(crt->getReceivePort(bcp->getDestAddress()));
-		bcp->setBurstIngressChannel(outChannel);
+		bcp->setBurstPort(crt->getReceivePort(bcp->getDestAddress()));
+		bcp->setBurstChannel(outChannel);
 
 		sendDelayed(bcp, processDelay, "bcpg$o", outPort);
 	}

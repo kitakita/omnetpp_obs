@@ -14,33 +14,3 @@
 // 
 
 #include "BurstControlPacket.h"
-
-BurstControlPacket::BurstControlPacket(const char *name = NULL) : BurstControlPacket_Base(name)
-{
-	initialize();
-}
-
-BurstControlPacket::BurstControlPacket(const BurstControlPacket& other) : BurstControlPacket_Base(other)
-{
-	initialize();
-}
-
-BurstControlPacket::~BurstControlPacket()
-{
-	bst = NULL;
-}
-
-void BurstControlPacket::initialize()
-{
-	bst = NULL;
-}
-
-void BurstControlPacket::setBurst(cMessage *msg)
-{
-	bst = msg;
-}
-
-cMessage *BurstControlPacket::getBurst()
-{
-	return bst;
-}

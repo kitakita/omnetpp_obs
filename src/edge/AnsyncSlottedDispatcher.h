@@ -13,33 +13,37 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __OMNETPP_OBS_ANSYNCSLOTTABLE_H_
-#define __OMNETPP_OBS_ANSYNCSLOTTABLE_H_
+#ifndef __OMNETPP_OBS_ANSYNCSLOTTEDDISPATCHER_H_
+#define __OMNETPP_OBS_ANSYNCSLOTTEDDISPATCHER_H_
 
 #include <omnetpp.h>
-#include "IPAddress.h"
+#include "OffsetTable.h"
+#include "IBurstScheduler.h"
+#include "WDMTable.h"
 
 /**
  * TODO - Generated class
  */
-class AnsyncSlotTable : public cSimpleModule
+class AnsyncSlottedDispatcher : public cSimpleModule
 {
   protected:
-//	typedef std::map<IPAddress, int> EnsureLengthTable;
-//	typedef std::pair<IPAddress, int> EnsureLength;
-//	EnsureLengthTable ensureTable;
-//
-//	typedef std::map<IPAddress, int> OffsetTable;
-//	typedef std::pair<IPAddress, int> Offset;
-//	OffsetTable offsetTable;
+	IBurstScheduler *bsc;
+	OffsetTable *oft;
+	WDMTable *wdm;
+
+	typedef std::map<IPAddress, int> AnsyncOffsetTable;
+	typedef std::pair<IPAddress, int> AnsyncOffset;
+	AnsyncOffsetTable ansyncOffsetTable;
+
+	simtime_t timeslot;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
-//  public:
-//    virtual int getBitOffset(const IPAddress& dest);
-//    virtual int getEnsureBitLength(const IPAddress& dest);
-//    virtual int getEnsureByteLength(const IPAddress& dest);
+    virtual void parse();
+	virtual void sendBurst(cMessage *msg);
+	virtual void receiveBurst(cMessage *msg);
+	virtual simtime_t getAnsyncOffset(const IPAddress& address);
 };
 
 #endif

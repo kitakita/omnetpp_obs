@@ -63,6 +63,7 @@ OBJS = \
     $O/core/CoreRoutingTable.o \
     $O/core/OpticalSwitchFabric.o \
     $O/edge/AnsyncSlotTable.o \
+    $O/edge/AnsyncSlottedDispatcher.o \
     $O/edge/AnsyncTimeSlicedDispatcher.o \
     $O/edge/BurstDisassembler.o \
     $O/edge/MixedTimerBurstlengthBasedQueue.o \
@@ -159,21 +160,20 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
-	messages/Burst_m.h \
 	messages/ConnectionEvent_m.h \
-	messages/IBurst.h \
 	common/HorizonScheduler.h \
-	common/IBurstScheduler.h \
 	messages/Burst.h \
-	messages/BurstControlPacket.h \
+	common/IBurstScheduler.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	common/WDMTable.h \
 	messages/BurstControlPacket_m.h \
+	messages/Burst_m.h \
+	messages/BurstControlPacket.h \
+	common/WDMTableAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
 	common/Schedule.h
 $O/common/Schedule.o: common/Schedule.cc \
-	messages/Burst_m.h \
-	messages/IBurst.h \
-	messages/Burst.h \
 	common/Schedule.h
 $O/common/WDMTable.o: common/WDMTable.cc \
 	common/WDMTable.h
@@ -182,7 +182,6 @@ $O/core/OpticalSwitchFabric.o: core/OpticalSwitchFabric.cc \
 $O/core/ControlUnit.o: core/ControlUnit.cc \
 	messages/ConnectionEvent_m.h \
 	core/CoreRoutingTable.h \
-	messages/IBurst.h \
 	core/ControlUnit.h \
 	messages/Burst.h \
 	common/IBurstScheduler.h \
@@ -205,6 +204,27 @@ $O/core/CoreRoutingTable.o: core/CoreRoutingTable.cc \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h
+$O/edge/AnsyncSlottedDispatcher.o: edge/AnsyncSlottedDispatcher.cc \
+	messages/Burst.h \
+	common/IBurstScheduler.h \
+	edge/AnsyncSlottedDispatcher.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	common/WDMTable.h \
+	messages/BurstControlPacket_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	messages/Burst_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddressResolver.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	messages/BurstControlPacket.h \
+	edge/OffsetTableAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
+	common/BurstSchedulerAccess.h \
+	common/WDMTableAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h \
+	edge/OffsetTable.h
 $O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
 	edge/PacketGenerator.h \
@@ -218,7 +238,6 @@ $O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
 $O/edge/MixedTimerBurstlengthBasedQueue.o: edge/MixedTimerBurstlengthBasedQueue.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
 	messages/Burst_m.h \
-	messages/IBurst.h \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
 	messages/Burst.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
@@ -240,7 +259,6 @@ $O/edge/PacketClassifier.o: edge/PacketClassifier.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/edge/BurstDisassembler.o: edge/BurstDisassembler.cc \
-	messages/IBurst.h \
 	messages/Burst.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	messages/BurstControlPacket_m.h \
@@ -265,24 +283,24 @@ $O/edge/PacketSink.o: edge/PacketSink.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/edge/TimeSlicedDispatcher.o: edge/TimeSlicedDispatcher.cc \
-	messages/IBurst.h \
 	messages/Burst.h \
 	common/IBurstScheduler.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
+	common/WDMTable.h \
 	messages/BurstControlPacket_m.h \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
-	edge/TimeSlicedDispatcher.h \
 	messages/Burst_m.h \
+	edge/TimeSlicedDispatcher.h \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
 	messages/BurstControlPacket.h \
 	edge/OffsetTableAccess.h \
 	common/BurstSchedulerAccess.h \
+	common/WDMTableAccess.h \
 	$(INET_PROJ)/src/base/ModuleAccess.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
-	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h \
-	edge/OffsetTable.h
+	edge/OffsetTable.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/edge/AnsyncTimeSlicedDispatcher.o: edge/AnsyncTimeSlicedDispatcher.cc \
-	messages/IBurst.h \
 	messages/Burst.h \
 	common/IBurstScheduler.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
@@ -312,20 +330,15 @@ $O/messages/BurstControlPacket.o: messages/BurstControlPacket.cc \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	messages/BurstControlPacket_m.h
+$O/messages/Burst.o: messages/Burst.cc \
+	messages/Burst_m.h \
+	messages/Burst.h
 $O/messages/BurstControlPacket_m.o: messages/BurstControlPacket_m.cc \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	messages/BurstControlPacket_m.h
-$O/messages/Burst.o: messages/Burst.cc \
-	messages/Burst_m.h \
-	messages/IBurst.h \
-	messages/Burst.h
 $O/messages/ConnectionEvent_m.o: messages/ConnectionEvent_m.cc \
 	messages/ConnectionEvent_m.h
-$O/messages/EnsureLengthBurst.o: messages/EnsureLengthBurst.cc \
-	messages/Burst_m.h \
-	messages/IBurst.h \
-	messages/EnsureLengthBurst.h
 $O/messages/Burst_m.o: messages/Burst_m.cc \
 	messages/Burst_m.h
 

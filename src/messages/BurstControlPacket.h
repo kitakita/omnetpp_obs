@@ -22,19 +22,22 @@
 class BurstControlPacket : public BurstControlPacket_Base
 {
   protected:
-	cMessage *bst;
-
-	virtual void initialize();
+	cMessage *burst;
+	int droppableByteLength;
 
   public:
-	BurstControlPacket(const char *name);
-	BurstControlPacket(const BurstControlPacket& other);
-	virtual ~BurstControlPacket();
+	BurstControlPacket(const char *name = NULL) : BurstControlPacket_Base(name) {}
+	BurstControlPacket(const BurstControlPacket& other) : BurstControlPacket_Base(other) {}
 	BurstControlPacket& operator=(const BurstControlPacket& other) { BurstControlPacket_Base::operator=(other); return *this; }
 	virtual BurstControlPacket *dup() { return new BurstControlPacket(*this); }
 
-	virtual void setBurst(cMessage *msg);
-	virtual cMessage *getBurst();
+	cMessage *getBurst() { return burst; };
+	void setBurst(cMessage *msg) { burst = msg; }
+
+	int getDroppableBitLength() { return droppableByteLength * 8; }
+	void setDroppableBitLength(int bits) { droppableByteLength = bits;  }
+	int getDroppableByteLength() { return droppableByteLength; }
+	void setDroppableByteLength(int bytes) { droppableByteLength = bytes; }
 };
 
 #endif /* BURSTCONTROLPACKET_H_ */

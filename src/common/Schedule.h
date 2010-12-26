@@ -17,33 +17,27 @@
 #define SCHEDULE_H_
 
 #include <omnetpp.h>
-#include "Burst.h"
 
 class Schedule {
   protected:
-	simtime_t time;
-	Burst *bst;
-	int burstDroppableByteLength;
-	double datarate;
+	simtime_t horizon;
+	cMessage *burst;
+	int droppableByteLength;
 
   public:
-	Schedule(double rate);
-	virtual ~Schedule();
+	Schedule();
+	virtual ~Schedule() {}
 
-	simtime_t getTime() { return time; }
-	void setTime(simtime_t t) { time = t; }
+	simtime_t getHorizon() { return horizon; }
+	void setHorizon(simtime_t time) { horizon = time; }
 
-	Burst *getBurst() { return bst; }
-	void setBurst(Burst *b) { bst = b; }
+	cMessage *getBurst() { return burst; }
+	void setBurst(cMessage *msg) { burst = msg; }
 
-	int getBurstDroppableByteLength() { return burstDroppableByteLength; }
-	int getBurstDroppableBitLength() { return burstDroppableByteLength * 8; }
-	simtime_t getBurstDroppableTimelength() { return (burstDroppableByteLength * 8) / datarate; }
-	void setBurstDroppableByteLength(int byte) { burstDroppableByteLength = byte; }
-	void setBurstDroppableBitLength(int bit) { burstDroppableByteLength = bit / 8; }
-
-	double getDatarate() { return datarate; }
-	void setDatarate(double rate) { datarate = rate; }
+	int getDroppableBitLength() { return droppableByteLength * 8; }
+	void setDroppableBitLength(int bits) { droppableByteLength = bits / 8; }
+	int getDroppableByteLength() { return droppableByteLength; }
+	void setDroppableByteLength(int bytes) { droppableByteLength = bytes; }
 };
 
 #endif /* SCHEDULE_H_ */

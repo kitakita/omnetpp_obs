@@ -20,23 +20,32 @@ Define_Module(WDMTable);
 void WDMTable::initialize()
 {
 	cModule *parent = getParentModule();
-	int gatesize = parent->gateSize("burstg$o");
+	int size = parent->gateSize("burstg$o");
 
-	for (int i = 0, prev = -1; i < gatesize; i++)
+	for (int i = 0, prev = -1; i < size; i++)
 	{
-		cGate *g = parent->gate("burstg$o", i);
-		int id = g->getNextGate()->getOwnerModule()->getId();
+		cGate *nextg = parent->gate("burstg$o", i)->getNextGate();
+		int id = nextg->getOwnerModule()->getId();
 		if (id != prev)
 		{
 			prev = id;
-			numChannelTable.push_back(0);
-			cDelayChannel *c = check_and_cast<cDelayChannel *>(g->getChannel());
-			transmissionDelayTable.push_back(c->getDelay());
+			ChannelTable table;
+			channelTables.push_back(table);
 		}
-		numChannelTable.back() += 1;
+		cGate *g = parent->gate("burstg$o", i);
+		channelTables.back().push_back(g->getChannel());
 	}
 
-	numLinkedNodes = numChannelTable.size();
+	numLinkedNodes = 0;
+
+	ChannelTables::iterator it = channelTables.begin();
+	while (it != channelTables.end())
+	{
+		numLinkedNodes += (*it).size();
+		it++;
+	}
+
+	datarate = par("datarate");
 
 	printTables();
 }
@@ -49,18 +58,31 @@ void WDMTable::handleMessage(cMessage *msg)
 void WDMTable::printTables()
 {
 	ev << "Number of linked nodes is " << numLinkedNodes << endl;
-	ev << "Channel table";
-	NumChannelTable::iterator it = numChannelTable.begin();
-	while (it != numChannelTable.end())
-		ev << " | " << *it++;
-	ev << endl << "Transmision delay table";
-	TransmissionDelayTable::iterator it2 = transmissionDelayTable.begin();
-	while (it2 != transmissionDelayTable.end())
-		ev << " | " << *it2++;
+
+	ev << "Number of Channel";
+
+	for (int i = 0; i < numLinkedNodes; i++)
+		ev << " | port:" << i << " - " << channelTables[i].size() << " ch";
+
+	ev << endl;
+
+	ev << "Transmisson Delay";
+
+	for (int i = 0; i < numLinkedNodes; i++)
+		ev << " | port:" << i << " - " << getTransmissionDelay(0) << " sec";
+
 	ev << endl;
 }
 
 int WDMTable::getGateIndex(int port, int channel)
 {
-	return (port * numChannelTable.at(port)) + channel;
+	return (port * channelTables[port].size()) + channel;
+}
+
+simtime_t WDMTable::getTransmissionDelay(int port, int channel)
+{
+	cChannel *c = channelTables[port][channel];
+	cDelayChannel *dc = check_and_cast<cDelayChannel *>(c);
+
+	return dc->getDelay();
 }

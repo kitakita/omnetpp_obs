@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include "OffsetTable.h"
 #include "IBurstScheduler.h"
+#include "WDMTable.h"
 
 /**
  * TODO - Generated class
@@ -26,11 +27,11 @@
 class TimeSlicedDispatcher : public cSimpleModule
 {
   protected:
-	OffsetTable *oft;
 	IBurstScheduler *bsc;
+	OffsetTable *oft;
+	WDMTable *wdm;
 
 	simtime_t timeslot;
-	double datarate;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

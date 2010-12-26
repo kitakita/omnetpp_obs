@@ -6,7 +6,7 @@
 class IBurstScheduler
 {
   public:
-	virtual int schedule(int port, cMessage *msg) = 0;
+	virtual int schedule(cMessage *msg, int port) = 0;
 };
 
 #endif /* IBURSTSCHEDULER_H_ */

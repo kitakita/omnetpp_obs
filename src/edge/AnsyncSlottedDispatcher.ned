@@ -13,25 +13,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef IBURST_H_
-#define IBURST_H_
+package omnetpp_obs.edge;
 
-#include <omnetpp.h>
-
-class IBurst
+//
+// TODO auto-generated module
+//
+simple AnsyncSlottedDispatcher like BurstDispatcher
 {
-  public:
-	virtual ~IBurst() {};
-
-	virtual cPacketQueue *getPacketQueue() = 0;
-	virtual void setPacketQueue(cPacketQueue *queue) = 0;
-
-	virtual int dropPacketsFromFront(int byteLength) = 0;
-	virtual int dropPacketsFromBack(int byteLength) = 0;
-
-	virtual int getNumPackets() const = 0;
-	virtual int64 getBitLength() const = 0;
-	virtual int64 getByteLength() const = 0;
-};
-
-#endif /* IBURST_H_ */
+    parameters:
+        string ansyncOffsetFile = default("");
+        double timeslot @unit("s");
+        @display("i=block/classifier2");
+    gates:
+        input in[];
+        output out;
+        inout bcpg;
+        inout burstg[];
+}
