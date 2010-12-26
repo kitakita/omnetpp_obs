@@ -13,33 +13,31 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __OMNETPP_OBS_ANSYNCSLOTTABLE_H_
-#define __OMNETPP_OBS_ANSYNCSLOTTABLE_H_
+#ifndef __OMNETPP_OBS_SLOTTEDDISPATCHER_H_
+#define __OMNETPP_OBS_SLOTTEDDISPATCHER_H_
 
 #include <omnetpp.h>
-#include "IPAddress.h"
+#include "OffsetTable.h"
+#include "IBurstScheduler.h"
+#include "WDMTable.h"
 
 /**
  * TODO - Generated class
  */
-class AnsyncSlotTable : public cSimpleModule
+class SlottedDispatcher : public cSimpleModule
 {
-  protected:
-//	typedef std::map<IPAddress, int> EnsureLengthTable;
-//	typedef std::pair<IPAddress, int> EnsureLength;
-//	EnsureLengthTable ensureTable;
-//
-//	typedef std::map<IPAddress, int> OffsetTable;
-//	typedef std::pair<IPAddress, int> Offset;
-//	OffsetTable offsetTable;
+protected:
+	IBurstScheduler *bsc;
+	OffsetTable *oft;
+	WDMTable *wdm;
 
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+	simtime_t timeslot;
 
-//  public:
-//    virtual int getBitOffset(const IPAddress& dest);
-//    virtual int getEnsureBitLength(const IPAddress& dest);
-//    virtual int getEnsureByteLength(const IPAddress& dest);
+	virtual void initialize();
+	virtual void handleMessage(cMessage *msg);
+
+	virtual void sendBurst(cMessage *msg);
+	virtual void receiveBurst(cMessage *msg);
 };
 
 #endif

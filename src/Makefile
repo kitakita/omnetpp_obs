@@ -62,16 +62,14 @@ OBJS = \
     $O/core/ControlUnit.o \
     $O/core/CoreRoutingTable.o \
     $O/core/OpticalSwitchFabric.o \
-    $O/edge/AnsyncSlotTable.o \
     $O/edge/AnsyncSlottedDispatcher.o \
-    $O/edge/AnsyncTimeSlicedDispatcher.o \
     $O/edge/BurstDisassembler.o \
     $O/edge/MixedTimerBurstlengthBasedQueue.o \
     $O/edge/OffsetTable.o \
     $O/edge/PacketClassifier.o \
     $O/edge/PacketGenerator.o \
     $O/edge/PacketSink.o \
-    $O/edge/TimeSlicedDispatcher.o \
+    $O/edge/SlottedDispatcher.o \
     $O/messages/Burst.o \
     $O/messages/BurstControlPacket.o \
     $O/messages/Burst_m.o \
@@ -235,6 +233,24 @@ $O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
+$O/edge/SlottedDispatcher.o: edge/SlottedDispatcher.cc \
+	messages/Burst.h \
+	common/IBurstScheduler.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
+	common/WDMTable.h \
+	messages/BurstControlPacket_m.h \
+	edge/SlottedDispatcher.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	messages/Burst_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	messages/BurstControlPacket.h \
+	edge/OffsetTableAccess.h \
+	common/BurstSchedulerAccess.h \
+	common/WDMTableAccess.h \
+	$(INET_PROJ)/src/base/ModuleAccess.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h \
+	edge/OffsetTable.h
 $O/edge/MixedTimerBurstlengthBasedQueue.o: edge/MixedTimerBurstlengthBasedQueue.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
 	messages/Burst_m.h \

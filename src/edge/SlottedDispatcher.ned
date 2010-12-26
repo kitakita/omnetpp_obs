@@ -18,12 +18,10 @@ package omnetpp_obs.edge;
 //
 // TODO auto-generated module
 //
-simple AnsyncTimeSlicedDispatcher like BurstDispatcher
+simple SlottedDispatcher like BurstDispatcher
 {
     parameters:
-        string ansyncPolicyFile = default("");
         double timeslot @unit("s");
-        double datarate @unit("bps") = default(10Gbps);
         @display("i=block/classifier2");
     gates:
         input in[];

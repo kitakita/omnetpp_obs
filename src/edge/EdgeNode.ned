@@ -16,6 +16,7 @@
 package omnetpp_obs.edge;
 
 import omnetpp_obs.common.BurstScheduler;
+import omnetpp_obs.common.WDMTable;
 
 //
 // TODO auto-generated type
@@ -70,7 +71,7 @@ module EdgeNode
         scheduler: <schedulerType> like BurstScheduler {
             @display("p=250,50");
         }
-        ansyncSlotTable: AnsyncSlotTable {
+        wdmTable: WDMTable {
             @display("p=135,50");
         }
     connections:
