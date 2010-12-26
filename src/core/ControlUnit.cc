@@ -48,6 +48,11 @@ void ControlUnit::handleMessage(cMessage *msg)
 		handleBurstControlPacket(msg);
 }
 
+void ControlUnit::finish()
+{
+	recordScalar("failedCounter", failedCounter);
+}
+
 void ControlUnit::handleSelfEvent(cMessage *msg)
 {
 	ConnectionEvent *cue = check_and_cast<ConnectionEvent *>(msg);

@@ -48,7 +48,7 @@ void SlottedDispatcher::sendBurst(cMessage *msg)
 
 	char bcpName[32];
 	sprintf(bcpName, "%s-bcp", bst->getName());
-	BurstControlPacket *bcp = new BurstControlPacket(bcpName);
+	BurstControlPacket *bcp = new BurstControlPacket(bcpName, 1);
 
 	IPControlInfo *ctrl = check_and_cast<IPControlInfo *>(bst->getControlInfo());
 	IPAddress src = ctrl->getSrcAddr();

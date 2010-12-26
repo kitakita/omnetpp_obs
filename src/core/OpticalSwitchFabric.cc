@@ -60,6 +60,11 @@ void OpticalSwitchFabric::handleMessage(cMessage *msg)
 	}
 }
 
+void OpticalSwitchFabric::finish()
+{
+	recordScalar("dropCounter", dropCounter);
+}
+
 void OpticalSwitchFabric::connect(int in, int out)
 {
 	Enter_Method("Switching port: input %d to output %d.", in, out);

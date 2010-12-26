@@ -53,6 +53,7 @@ void BurstDisassembler::finish()
     recordScalar("numBits", numBits);
     recordScalar("packetsPreBurst", packetsPreBurst);
     recordScalar("burstsPerSec", burstsPerSec);
+    recordScalar("avrDelay", avrDelay.dbl());
 }
 
 void BurstDisassembler::handleBurst(cMessage *msg)

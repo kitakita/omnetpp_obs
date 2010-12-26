@@ -26,7 +26,7 @@ class BurstControlPacket : public BurstControlPacket_Base
 	int droppableByteLength;
 
   public:
-	BurstControlPacket(const char *name = NULL) : BurstControlPacket_Base(name) {}
+	BurstControlPacket(const char *name = NULL, int kind = 0) : BurstControlPacket_Base(name, kind) {}
 	BurstControlPacket(const BurstControlPacket& other) : BurstControlPacket_Base(other) {}
 	BurstControlPacket& operator=(const BurstControlPacket& other) { BurstControlPacket_Base::operator=(other); return *this; }
 	virtual BurstControlPacket *dup() { return new BurstControlPacket(*this); }
