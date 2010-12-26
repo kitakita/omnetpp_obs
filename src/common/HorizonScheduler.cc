@@ -172,9 +172,9 @@ int HorizonScheduler::schedule(cMessage *msg, int port)
 		if (res.dropped)
 		{
 			Burst *bst = check_and_cast<Burst *>(sc->getBurst());
-			int dropByteLength = 8 * res.offset.dbl() * wdm->getDatarate(port);
+			int dropByteLength = 8 * (- res.offset.dbl()) * wdm->getDatarate(port);
 			int droppedByteLength = bst->dropPacketsFromBack(dropByteLength);
-			simtime_t burstlength = bst->getBitLength() * wdm->getDatarate(port);
+			simtime_t burstlength = bst->getBitLength() / wdm->getDatarate(port);
 			int restDroppableByteLength = bcp->getDroppableByteLength() - droppedByteLength;
 
 			bcp->setBurstlength(burstlength);
