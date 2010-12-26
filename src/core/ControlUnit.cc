@@ -61,6 +61,8 @@ void ControlUnit::handleSelfEvent(cMessage *msg)
 
 void ControlUnit::handleBurstControlPacket(cMessage *msg)
 {
+	printBCP(msg);
+
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
 	int inPort = bcp->getBurstPort();
@@ -105,4 +107,18 @@ void ControlUnit::handleBurstControlPacket(cMessage *msg)
 		sprintf(buf, "drop: %d bursts", failedCounter);
 		getDisplayString().setTagArg("t", 0, buf);
 	}
+}
+
+void ControlUnit::printBCP(cMessage *msg)
+{
+	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
+
+	ev << bcp->getName()
+	<< " | Src: " << bcp->getSrcAddress().str().c_str()
+	<< " Dest: " << bcp->getDestAddress().str().c_str()
+	<< "BurstArrivalTime: " << bcp->getBurstArrivalTime()
+	<< "Burstlength: " << bcp->getBurstlength()
+	<< "BurstPort: " << bcp->getBurstPort()
+	<< "DroppableByteLength: " << bcp->getDroppableByteLength()
+	<< "Burst: " << bcp->getBurst()->getName();
 }

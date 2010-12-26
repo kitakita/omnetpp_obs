@@ -44,6 +44,7 @@ class ControlUnit : public cSimpleModule
 
     virtual void handleSelfEvent(cMessage *msg);
     virtual void handleBurstControlPacket(cMessage *msg);
+    virtual void printBCP(cMessage *msg);
 };
 
 #endif

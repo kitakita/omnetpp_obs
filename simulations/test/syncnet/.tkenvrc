@@ -1,6 +1,6 @@
 # Partial Tkenv config file -- see $HOME/.tkenvrc as well
 inspector "Syncnet.edge4" "EdgeNode" "2" "565x340+-1205+589:normal"
-inspector "Syncnet" "Syncnet" "2" "565x340+-624+589:normal"
 inspector "Syncnet.core2" "CoreNode" "2" "565x339+138+144:normal"
+inspector "Syncnet" "Syncnet" "2" "565x340+-624+589:normal"
 inspector "simulation.scheduled-events.burst-1773-bcp" "BurstControlPacket" "1" "460x312+770+232:normal"
 

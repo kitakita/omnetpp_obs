@@ -21,6 +21,6 @@ package omnetpp_obs.common;
 simple WDMTable
 {
     parameters:
-        double datarate @unit("bps") = defalt(10Gbps);
+        double datarate @unit("bps") = default(10Gbps);
     	@display("i=block/table2");
 }

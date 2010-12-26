@@ -82,7 +82,7 @@ void SlottedDispatcher::sendBurst(cMessage *msg)
 	bcp->setBurst(bst);
 	bcp->setDroppableByteLength(bst->getByteLength() / 2);
 
-	int channel = -1;
+	int channel = bsc->schedule(bcp, 0);
 	while (channel < 0)
 	{
 		channel = bsc->schedule(bcp, 0);
