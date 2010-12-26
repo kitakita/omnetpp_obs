@@ -41,7 +41,7 @@ void WDMTable::initialize()
 	ChannelTables::iterator it = channelTables.begin();
 	while (it != channelTables.end())
 	{
-		numLinkedNodes += (*it).size();
+		numLinkedNodes++;
 		it++;
 	}
 
@@ -69,7 +69,7 @@ void WDMTable::printTables()
 	ev << "Transmisson Delay";
 
 	for (int i = 0; i < numLinkedNodes; i++)
-		ev << " | port:" << i << " - " << getTransmissionDelay(0) << " sec";
+		ev << " | port:" << i << " - " << getTransmissionDelay(i, 0) << " sec";
 
 	ev << endl;
 }

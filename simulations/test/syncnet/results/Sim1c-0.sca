@@ -1,0 +1,57 @@
+version 2
+run Sim1c-0-20101226-13:01:59-8432
+attr configname Sim1c
+attr datetime 20101226-13:01:59
+attr experiment Sim1c
+attr inifile C:/work/home/OMNeT++Projects/omnetpp_obs/simulations/test/syncnet/omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network Syncnet
+attr processid 8432
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar Syncnet.edge0.disassembler 	numBursts 	7938
+scalar Syncnet.edge0.disassembler 	numBits 	9994220000
+scalar Syncnet.edge0.disassembler 	packetsPreBurst 	125.9035021416
+scalar Syncnet.edge0.disassembler 	burstsPerSec 	7918.2044887781
+scalar Syncnet.edge0.sink 	numPackets 	999422
+scalar Syncnet.edge0.sink 	numBits 	9994220000
+scalar Syncnet.edge0.sink 	throughput 	9969296758.1047
+scalar Syncnet.edge0.sink 	packetsPerSec 	996929.67581047
+scalar Syncnet.edge1.disassembler 	numBursts 	7942
+scalar Syncnet.edge1.disassembler 	numBits 	9998710000
+scalar Syncnet.edge1.disassembler 	packetsPreBurst 	125.89662553513
+scalar Syncnet.edge1.disassembler 	burstsPerSec 	7922.1945137157
+scalar Syncnet.edge1.sink 	numPackets 	999871
+scalar Syncnet.edge1.sink 	numBits 	9998710000
+scalar Syncnet.edge1.sink 	throughput 	9973775561.0973
+scalar Syncnet.edge1.sink 	packetsPerSec 	997377.55610973
+scalar Syncnet.edge2.disassembler 	numBursts 	7938
+scalar Syncnet.edge2.disassembler 	numBits 	9995060000
+scalar Syncnet.edge2.disassembler 	packetsPreBurst 	125.91408415218
+scalar Syncnet.edge2.disassembler 	burstsPerSec 	7922.1556886228
+scalar Syncnet.edge2.sink 	numPackets 	999506
+scalar Syncnet.edge2.sink 	numBits 	9995060000
+scalar Syncnet.edge2.sink 	throughput 	9975109780.4391
+scalar Syncnet.edge2.sink 	packetsPerSec 	997510.97804391
+scalar Syncnet.edge3.disassembler 	numBursts 	7943
+scalar Syncnet.edge3.disassembler 	numBits 	9994640000
+scalar Syncnet.edge3.disassembler 	packetsPreBurst 	125.82953544001
+scalar Syncnet.edge3.disassembler 	burstsPerSec 	7923.1920199501
+scalar Syncnet.edge3.sink 	numPackets 	999464
+scalar Syncnet.edge3.sink 	numBits 	9994640000
+scalar Syncnet.edge3.sink 	throughput 	9969715710.7232
+scalar Syncnet.edge3.sink 	packetsPerSec 	996971.57107232
+scalar Syncnet.edge4.disassembler 	numBursts 	7943
+scalar Syncnet.edge4.disassembler 	numBits 	10017370000
+scalar Syncnet.edge4.disassembler 	packetsPreBurst 	126.11569935792
+scalar Syncnet.edge4.disassembler 	burstsPerSec 	7919.2422731805
+scalar Syncnet.edge4.sink 	numPackets 	1001737
+scalar Syncnet.edge4.sink 	numBits 	10017370000
+scalar Syncnet.edge4.sink 	throughput 	9987407776.67
+scalar Syncnet.edge4.sink 	packetsPerSec 	998740.777667

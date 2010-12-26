@@ -101,7 +101,7 @@ ScheduleResult HorizonScheduler::trySchedule(simtime_t arrivalTime, int port, in
 	if (droppable && res.offset < 0 && res.offset + sc->getDroppableBitLength() / wdm->getDatarate(port) >= 0)
 		res.dropped = true;
 
-	if (channel < 0)
+	if (channel >= 0)
 		return res;
 
 	simtime_t offset;
@@ -196,7 +196,7 @@ int HorizonScheduler::schedule(cMessage *msg, int port)
 	ev << "aft";
 	if (res.channel < 0)
 	{
-		ev << " | failed.";
+		ev << " | failed." << endl;
 		if (ev.isGUI()) bubble("failed");
 	}
 	else

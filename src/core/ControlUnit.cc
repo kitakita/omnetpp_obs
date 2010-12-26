@@ -116,9 +116,9 @@ void ControlUnit::printBCP(cMessage *msg)
 	ev << bcp->getName()
 	<< " | Src: " << bcp->getSrcAddress().str().c_str()
 	<< " Dest: " << bcp->getDestAddress().str().c_str()
-	<< "BurstArrivalTime: " << bcp->getBurstArrivalTime()
-	<< "Burstlength: " << bcp->getBurstlength()
-	<< "BurstPort: " << bcp->getBurstPort()
-	<< "DroppableByteLength: " << bcp->getDroppableByteLength()
-	<< "Burst: " << bcp->getBurst()->getName();
+	<< " BurstArrivalTime: " << bcp->getBurstArrivalTime()
+	<< " Burstlength: " << bcp->getBurstlength()
+	<< " BurstPort: " << bcp->getBurstPort()
+	<< " DroppableByteLength: " << bcp->getDroppableByteLength()
+	<< " Burst: " << bcp->getBurst()->getName() << endl;
 }
