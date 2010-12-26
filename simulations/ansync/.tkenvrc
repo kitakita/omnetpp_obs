@@ -1,0 +1,6 @@
+# Partial Tkenv config file -- see $HOME/.tkenvrc as well
+inspector "AnsyncNetwork.core2" "CoreNode" "2" "364x264+-1349+872:normal"
+inspector "AnsyncNetwork.edge0" "EdgeNode" "2" "367x439+-971+679:normal"
+inspector "AnsyncNetwork" "AnsyncNetwork" "2" "565x340+-584+678:normal"
+inspector "AnsyncNetwork.core0" "CoreNode" "2" "384x278+-1355+679:normal"
+

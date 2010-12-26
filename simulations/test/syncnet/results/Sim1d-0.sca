@@ -1,0 +1,72 @@
+version 2
+run Sim1d-0-20101226-15:38:36-6972
+attr configname Sim1d
+attr datetime 20101226-15:38:36
+attr experiment Sim1d
+attr inifile C:/work/home/OMNeT++Projects/omnetpp_obs/simulations/test/syncnet/omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network Syncnet
+attr processid 6972
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar Syncnet.edge0.disassembler 	numBursts 	5407
+scalar Syncnet.edge0.disassembler 	numBits 	6817290000
+scalar Syncnet.edge0.disassembler 	packetsPreBurst 	126.08267061217
+scalar Syncnet.edge0.disassembler 	burstsPerSec 	5393.5162094763
+scalar Syncnet.edge0.disassembler 	avrDelay 	0.001179384553
+scalar Syncnet.edge0.sink 	numPackets 	681729
+scalar Syncnet.edge0.sink 	numBits 	6817290000
+scalar Syncnet.edge0.sink 	throughput 	6800289276.808
+scalar Syncnet.edge0.sink 	packetsPerSec 	680028.9276808
+scalar Syncnet.core0.opticalSwitchFabric 	dropCounter 	1711
+scalar Syncnet.core0.controlUnit 	failedCounter 	1403
+scalar Syncnet.edge1.disassembler 	numBursts 	5260
+scalar Syncnet.edge1.disassembler 	numBits 	6622230000
+scalar Syncnet.edge1.disassembler 	packetsPreBurst 	125.89790874525
+scalar Syncnet.edge1.disassembler 	burstsPerSec 	5246.8827930175
+scalar Syncnet.edge1.disassembler 	avrDelay 	0.001017703244
+scalar Syncnet.edge1.sink 	numPackets 	662223
+scalar Syncnet.edge1.sink 	numBits 	6622230000
+scalar Syncnet.edge1.sink 	throughput 	6605715710.7232
+scalar Syncnet.edge1.sink 	packetsPerSec 	660571.57107232
+scalar Syncnet.core1.opticalSwitchFabric 	dropCounter 	2616
+scalar Syncnet.core1.controlUnit 	failedCounter 	3329
+scalar Syncnet.edge2.disassembler 	numBursts 	5418
+scalar Syncnet.edge2.disassembler 	numBits 	6816160000
+scalar Syncnet.edge2.disassembler 	packetsPreBurst 	125.80583241048
+scalar Syncnet.edge2.disassembler 	burstsPerSec 	5407.1856287425
+scalar Syncnet.edge2.disassembler 	avrDelay 	0.000911309188
+scalar Syncnet.edge2.sink 	numPackets 	681616
+scalar Syncnet.edge2.sink 	numBits 	6816160000
+scalar Syncnet.edge2.sink 	throughput 	6802554890.2196
+scalar Syncnet.edge2.sink 	packetsPerSec 	680255.48902196
+scalar Syncnet.core2.opticalSwitchFabric 	dropCounter 	3065
+scalar Syncnet.core2.controlUnit 	failedCounter 	3516
+scalar Syncnet.edge3.disassembler 	numBursts 	5330
+scalar Syncnet.edge3.disassembler 	numBits 	6707400000
+scalar Syncnet.edge3.disassembler 	packetsPreBurst 	125.84240150094
+scalar Syncnet.edge3.disassembler 	burstsPerSec 	5316.7082294264
+scalar Syncnet.edge3.disassembler 	avrDelay 	0.00104391174
+scalar Syncnet.edge3.sink 	numPackets 	670740
+scalar Syncnet.edge3.sink 	numBits 	6707400000
+scalar Syncnet.edge3.sink 	throughput 	6690673316.7082
+scalar Syncnet.edge3.sink 	packetsPerSec 	669067.33167082
+scalar Syncnet.core3.opticalSwitchFabric 	dropCounter 	2897
+scalar Syncnet.core3.controlUnit 	failedCounter 	3308
+scalar Syncnet.edge4.disassembler 	numBursts 	5314
+scalar Syncnet.edge4.disassembler 	numBits 	6695770000
+scalar Syncnet.edge4.disassembler 	packetsPreBurst 	126.00244636808
+scalar Syncnet.edge4.disassembler 	burstsPerSec 	5298.1056829511
+scalar Syncnet.edge4.disassembler 	avrDelay 	0.001135812895
+scalar Syncnet.edge4.sink 	numPackets 	669577
+scalar Syncnet.edge4.sink 	numBits 	6695770000
+scalar Syncnet.edge4.sink 	throughput 	6675742771.6849
+scalar Syncnet.edge4.sink 	packetsPerSec 	667574.27716849
+scalar Syncnet.core4.opticalSwitchFabric 	dropCounter 	1729
+scalar Syncnet.core4.controlUnit 	failedCounter 	1419
