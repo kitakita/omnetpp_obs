@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package omnetpp_obs.simulations.test.syncnet;
+package omnetpp_obs.simulations.sync;
 
 import ned.DelayChannel;
 import omnetpp_obs.core.CoreNode;
@@ -22,7 +22,7 @@ import omnetpp_obs.edge.EdgeNode;
 //
 // TODO Auto-generated network
 //
-network Syncnet
+network SyncNetwork
 {
     parameters:
         int numDataChannels;
