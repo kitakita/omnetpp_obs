@@ -60,6 +60,13 @@ void AnsyncSlottedDispatcher::parse()
 		ansyncOffsetTable.insert(AnsyncOffset(dest, offset));
 	}
 	ifs.close();
+
+	AnsyncOffsetTable::iterator it = ansyncOffsetTable.begin();
+	while (it != ansyncOffsetTable.end())
+	{
+		ev << "IPAddress: " << it->first << " Offset: " << it->second << endl;
+		it++;
+	}
 }
 
 void AnsyncSlottedDispatcher::sendBurst(cMessage *msg)
@@ -94,10 +101,10 @@ void AnsyncSlottedDispatcher::sendBurst(cMessage *msg)
 	int droppableByteLength = 0;
 	simtime_t droppableTime = 0;
 
-	if (nextSlot - (sendTime + burstlength) > 0)
+	if (sendTime + burstlength - nextSlot > 0)
 	{
-		droppableTime = (nextSlot - (sendTime + burstlength));
-		droppableByteLength= (droppableTime * wdm->getDatarate(0) / 8).dbl();
+		droppableTime = sendTime + burstlength - nextSlot;
+		droppableByteLength = (droppableTime * wdm->getDatarate(0) / 8).dbl();
 	}
 
 	ev << "Dispatcher send burst." << endl
