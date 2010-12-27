@@ -1,5 +1,0 @@
-# Partial Tkenv config file -- see $HOME/.tkenvrc as well
-inspector "Twocores" "Twocores" "2" "565x187+-611+621:normal"
-inspector "Twocores.core0" "CoreNode" "2" "569x439+-1211+663:normal"
-inspector "Twocores.edge0" "EdgeNode" "2" "565x340+-608+788:normal"
-
