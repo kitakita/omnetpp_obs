@@ -58,7 +58,7 @@ void SlottedDispatcher::sendBurst(cMessage *msg)
 	simtime_t sendTime;
 	simtime_t burstlength = bst->getBitLength() / wdm->getDatarate(0);
 
-	if ((int)((simTime() + offset) / timeslot) == 0)
+	if ((simTime() + offset).raw() % timeslot.raw() == 0)
 		sendTime = timeslot * (int)((simTime() + offset) / timeslot);
 	else
 		sendTime = timeslot * ((int)((simTime() + offset) / timeslot) + 1);
