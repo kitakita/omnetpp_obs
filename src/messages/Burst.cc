@@ -40,7 +40,7 @@ void Burst::initialize()
 int Burst::dropPacketsFromFront(int dropByteLength)
 {
 	int droppedByteLength = 0;
-	while (droppedByteLength <= dropByteLength)
+	while (droppedByteLength < dropByteLength)
 	{
 		if (packets->empty())
 			break;
@@ -56,7 +56,7 @@ int Burst::dropPacketsFromFront(int dropByteLength)
 int Burst::dropPacketsFromBack(int dropByteLength)
 {
 	int droppedByteLength = 0;
-	while (droppedByteLength <= dropByteLength)
+	while (droppedByteLength < dropByteLength)
 	{
 		if (packets->empty())
 			break;

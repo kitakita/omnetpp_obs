@@ -23,7 +23,7 @@ class BurstControlPacket : public BurstControlPacket_Base
 {
   protected:
 	cMessage *burst;
-	int droppableByteLength;
+	int64 droppableByteLength;
 
   public:
 	BurstControlPacket(const char *name = NULL, int kind = 0) : BurstControlPacket_Base(name, kind) {}
@@ -34,10 +34,10 @@ class BurstControlPacket : public BurstControlPacket_Base
 	cMessage *getBurst() { return burst; };
 	void setBurst(cMessage *msg) { burst = msg; }
 
-	int getDroppableBitLength() { return droppableByteLength * 8; }
-	void setDroppableBitLength(int bits) { droppableByteLength = bits;  }
-	int getDroppableByteLength() { return droppableByteLength; }
-	void setDroppableByteLength(int bytes) { droppableByteLength = bytes; }
+	int64 getDroppableBitLength() { return droppableByteLength * 8; }
+	void setDroppableBitLength(int64 bits) { droppableByteLength = bits / 8;  }
+	int64 getDroppableByteLength() { return droppableByteLength; }
+	void setDroppableByteLength(int64 bytes) { droppableByteLength = bytes; }
 };
 
 #endif /* BURSTCONTROLPACKET_H_ */
