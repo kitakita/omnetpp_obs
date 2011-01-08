@@ -62,7 +62,7 @@ void OpticalSwitchFabric::handleMessage(cMessage *msg)
 
 void OpticalSwitchFabric::finish()
 {
-	recordScalar("dropCounter", dropCounter);
+	recordScalar("OpticalSwitchFabric-dropCounter", dropCounter);
 }
 
 void OpticalSwitchFabric::connect(int in, int out)

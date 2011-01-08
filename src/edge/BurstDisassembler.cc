@@ -26,17 +26,17 @@ void BurstDisassembler::initialize()
 	myAddress = IPAddressResolver().resolve(par("myAddress"));
 	numBursts = 0;
 	numBCPs = 0;
-	numBits = 0;
-	packetsPreBurst = 0;
-	burstsPerSec = 0;
-	avrDelay = 0;
+	burstPerSec = 0;
+	sumPackets =0;
+	sumBytes = 0;
+	sumDelay = 0;
 
 	WATCH(numBursts);
-	WATCH(numBCPs = 0);
-	WATCH(numBits);
-	WATCH(packetsPreBurst);
-	WATCH(burstsPerSec);
-	WATCH(avrDelay);
+	WATCH(numBCPs);
+	WATCH(burstPerSec);
+	WATCH(sumPackets);
+	WATCH(sumBytes);
+	WATCH(sumDelay);
 }
 
 void BurstDisassembler::handleMessage(cMessage *msg)
@@ -49,11 +49,14 @@ void BurstDisassembler::handleMessage(cMessage *msg)
 
 void BurstDisassembler::finish()
 {
-    recordScalar("numBursts", numBursts);
-    recordScalar("numBits", numBits);
-    recordScalar("packetsPreBurst", packetsPreBurst);
-    recordScalar("burstsPerSec", burstsPerSec);
-    recordScalar("avrDelay", avrDelay.dbl());
+    recordScalar("Disassembler-numBursts", numBursts);
+    recordScalar("Disassembler-numBCPs", numBCPs);
+    recordScalar("Disassembler-burstPerSec", burstPerSec);
+    recordScalar("Disassembler-sumPackets", sumPackets);
+    recordScalar("Disassembler-sumBytes", sumBytes);
+    recordScalar("Disassembler-packetPreBurst", sumPackets / numBursts);
+    recordScalar("Disassembler-avrByteBurstlength", sumBytes / numBursts);
+    recordScalar("Disassembler-avrDelay", sumDelay / numBursts);
 }
 
 void BurstDisassembler::handleBurst(cMessage *msg)
@@ -63,13 +66,14 @@ void BurstDisassembler::handleBurst(cMessage *msg)
 
 	if (myAddress == ctrl->getDestAddr())
 	{
-		numBursts++;
-		numBits += bst->getBitLength();
-		packetsPreBurst = (packetsPreBurst * (((double)numBursts - 1) / (double)numBursts))
-						  + ((double)(bst->getNumPackets()) / (double)numBursts);
-		burstsPerSec = numBursts / simTime();
-
 		cPacketQueue *queue = bst->getPacketQueue();
+
+		numBursts++;
+		burstPerSec = numBursts / simTime();
+		sumPackets += queue->length();
+		sumBytes += bst->getByteLength();
+		sumDelay += simTime() - bst->getCreationTime();
+
 		while (!queue->empty())
 			send(queue->pop(), "out");
 	}
@@ -89,15 +93,7 @@ void BurstDisassembler::handleBurstControlPacket(cMessage *msg)
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
 	if (myAddress == bcp->getDestAddress())
-	{
 		numBCPs++;
-
-		simtime_t creation = bcp->getCreationTime();
-		simtime_t arrival = bcp->getBurstArrivalTime() + bcp->getBurstlength();
-		simtime_t delay = arrival - creation;
-
-		avrDelay = (avrDelay * (((double)numBCPs - 1) / (double)numBCPs)) + (delay / (double)numBCPs);
-	}
 
 	delete msg;
 }

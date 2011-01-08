@@ -26,12 +26,13 @@ class BurstDisassembler : public cSimpleModule
 {
   protected:
 	IPvXAddress myAddress;
+
 	int numBursts;
 	int numBCPs;
-	int64 numBits;
-	double packetsPreBurst;
-	double burstsPerSec;
-	simtime_t avrDelay;
+	double burstPerSec;
+	int64 sumPackets;
+	int64 sumBytes;
+	simtime_t sumDelay;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

@@ -26,10 +26,12 @@ class PacketSink : public cSimpleModule
 {
   protected:
 	IPvXAddress myAddress;
+
 	int numPackets;
-	int64 numBits;
-	double throughput;
-	double packetsPerSec;
+	int64 sumBytes;
+	simtime_t sumDelay;
+	double packetPerSec;
+	double bitPerSec;
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

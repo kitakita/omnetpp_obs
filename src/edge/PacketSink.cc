@@ -22,15 +22,18 @@ Define_Module(PacketSink);
 void PacketSink::initialize()
 {
 	myAddress = IPAddressResolver().resolve(par("myAddress"));
+
     numPackets = 0;
-    numBits = 0;
-    throughput = 0;
-    packetsPerSec = 0;
+    sumBytes = 0;
+    sumDelay = 0;
+    packetPerSec = 0;
+    bitPerSec = 0;
 
     WATCH(numPackets);
-    WATCH(numBits);
-    WATCH(throughput);
-    WATCH(packetsPerSec);
+    WATCH(sumBytes);
+    WATCH(sumDelay);
+    WATCH(packetPerSec);
+    WATCH(bitPerSec);
 }
 
 void PacketSink::handleMessage(cMessage *msg)
@@ -41,9 +44,10 @@ void PacketSink::handleMessage(cMessage *msg)
 	if (myAddress == ctrl->getDestAddr())
 	{
 		numPackets++;
-		numBits += pkt->getBitLength();
-		throughput = numBits / simTime();
-		packetsPerSec = numPackets / simTime();
+		sumBytes += pkt->getByteLength();
+		sumDelay += simTime() - pkt->getCreationTime();
+		packetPerSec = numPackets / simTime();
+		bitPerSec = (sumBytes * 8) / simTime();
 	}
 
     if (ev.isGUI())
@@ -58,8 +62,9 @@ void PacketSink::handleMessage(cMessage *msg)
 
 void PacketSink::finish()
 {
-	recordScalar("numPackets", numPackets);
-	recordScalar("numBits", numBits);
-    recordScalar("throughput", throughput);
-	recordScalar("packetsPerSec", packetsPerSec);
+	recordScalar("Sink-numPackets", numPackets);
+	recordScalar("Sink-sumBytes", sumBytes);
+	recordScalar("Sink-packetPerSec", packetPerSec);
+    recordScalar("Sink-bitPerSec", bitPerSec);
+	recordScalar("Sink-avrDelay", sumDelay / numPackets);
 }

@@ -50,7 +50,7 @@ void ControlUnit::handleMessage(cMessage *msg)
 
 void ControlUnit::finish()
 {
-	recordScalar("failedCounter", failedCounter);
+	recordScalar("ControlUnit-failedCounter", failedCounter);
 }
 
 void ControlUnit::handleSelfEvent(cMessage *msg)
