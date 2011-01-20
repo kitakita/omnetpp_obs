@@ -93,7 +93,7 @@ void MixedTimerBurstlengthBasedQueue::processPacket(cMessage *msg)
     }
     else
     {
-    	if ((queue->getByteLength() + pkt->getByteLength()) < maxByteBurstlength)
+    	if ((queue->getByteLength() + pkt->getByteLength()) <= maxByteBurstlength)
     		queue->insert(pkt);
     	else
     	{

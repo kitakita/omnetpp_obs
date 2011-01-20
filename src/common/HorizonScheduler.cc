@@ -63,9 +63,9 @@ void HorizonScheduler::printSchedule(int port)
 {
 	for (unsigned int i = 0; i < scheduleTables[port].size(); i++)
 	{
-		char schedule[32];
-		sprintf(schedule, "%16.12f", scheduleTables[port][i]->getHorizon().dbl());
-		ev << " | " << schedule;
+		char schedule[48];
+		sprintf(schedule, " |ch%2d:%16.12f", i, scheduleTables[port][i]->getHorizon().dbl());
+		ev << schedule;
 	}
 	ev << endl;
 }
@@ -119,9 +119,9 @@ ScheduleResult HorizonScheduler::trySchedule(simtime_t arrivalTime, int port, in
 
 		offset = arrivalTime - sc->getHorizon();
 
-		if (offset > 0)
+		if (offset >= 0)
 		{
-			if (res.offset < 0 || (res.offset > 0 && res.offset > offset))
+			if (res.offset < 0 || (res.offset >= 0 && res.offset > offset))
 			{
 				res.offset = offset;
 				res.channel = i;
@@ -186,14 +186,14 @@ int HorizonScheduler::schedule(cMessage *msg, int port)
 		}
 	}
 
-	ev << "bef";
+	ev << "before";
 	printSchedule(port);
 
 	sc->setHorizon(bcp->getBurstArrivalTime() + bcp->getBurstlength());
 	sc->setBurst(bcp->getBurst());
 	sc->setDroppableByteLength(bcp->getDroppableByteLength());
 
-	ev << "aft";
+	ev << "after ";
 	if (res.channel < 0)
 	{
 		ev << " | failed." << endl;
