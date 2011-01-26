@@ -84,7 +84,13 @@ void AnsyncSlottedDispatcher::sendBurst(cMessage *msg)
 	simtime_t offset = oft->getOffset(dest);
 	simtime_t ansyncOffset = getAnsyncOffset(dest);
 	simtime_t burstlength = bst->getBitLength() / wdm->getDatarate(0);
-	simtime_t sendTime = timeslot * (int)(simTime() / timeslot) + ansyncOffset;
+	simtime_t sendTime;
+
+	if (burstlength <= timeslot - ansyncOffset)
+		sendTime = timeslot * (int)(simTime() / timeslot) + ansyncOffset;
+	else
+		sendTime = timeslot * (int)(simTime() / timeslot) + timeslot - burstlength;
+
 	simtime_t nextSlot = timeslot * (int)(simTime() / timeslot) + timeslot;
 
 	if (sendTime <= simTime() + offset)
@@ -101,9 +107,9 @@ void AnsyncSlottedDispatcher::sendBurst(cMessage *msg)
 	int droppableByteLength = 0;
 	simtime_t droppableTime = 0;
 
-	if (sendTime + burstlength - nextSlot > 0)
+	if (timeslot - ansyncOffset < burstlength)
 	{
-		droppableTime = sendTime + burstlength - nextSlot;
+		droppableTime = burstlength - (timeslot - ansyncOffset);
 		droppableByteLength = (droppableTime * wdm->getDatarate(0) / 8).dbl();
 	}
 

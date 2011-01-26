@@ -46,7 +46,7 @@ class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 
 	virtual void printSchedule(int outPort);
 	virtual void updateDisplayString();
-	virtual ScheduleResult trySchedule(simtime_t arrivalTime, int port, int channel);
+	virtual ScheduleResult trySchedule(cMessage *msg, int port, int channel);
 
   public:
 	virtual int schedule(cMessage *msg, int port);

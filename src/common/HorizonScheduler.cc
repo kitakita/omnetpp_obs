@@ -90,15 +90,17 @@ void HorizonScheduler::updateDisplayString()
     getDisplayString().setTagArg("t", 0, tag);
 }
 
-ScheduleResult HorizonScheduler::trySchedule(simtime_t arrivalTime, int port, int channel = -1)
+ScheduleResult HorizonScheduler::trySchedule(cMessage *msg, int port, int channel = -1)
 {
+	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
+
 	Schedule *sc = channel < 0 ? scheduleTables[port][0] : scheduleTables[port][channel];
-	ScheduleResult res = { arrivalTime - sc->getHorizon(), channel < 0 ? 0 : channel, false};
+	ScheduleResult res = { bcp->getBurstArrivalTime() - sc->getHorizon(), channel < 0 ? 0 : channel, false};
 
 	if (sc->getHorizon() == 0)
 		return res;
 
-	if (droppable && res.offset < 0 && res.offset + sc->getDroppableBitLength() / wdm->getDatarate(port) >= 0)
+	if (droppable && res.offset < 0 && res.offset + ((bcp->getDroppableByteLength() * 8) / wdm->getDatarate(port)) >= 0)
 		res.dropped = true;
 
 	if (channel >= 0)
@@ -112,12 +114,12 @@ ScheduleResult HorizonScheduler::trySchedule(simtime_t arrivalTime, int port, in
 
 		if (sc->getHorizon() == 0)
 		{
-			res.offset = arrivalTime;
+			res.offset = bcp->getBurstArrivalTime();
 			res.channel = i;
 			return res;
 		}
 
-		offset = arrivalTime - sc->getHorizon();
+		offset = bcp->getBurstArrivalTime() - sc->getHorizon();
 
 		if (offset >= 0)
 		{
@@ -133,7 +135,7 @@ ScheduleResult HorizonScheduler::trySchedule(simtime_t arrivalTime, int port, in
 			{
 				if (droppable)
 				{
-					if (offset + sc->getDroppableBitLength() / wdm->getDatarate(port) >= 0)
+					if (offset + ((bcp->getDroppableByteLength() * 8) / wdm->getDatarate(port)) >= 0)
 					{
 						res.offset = offset;
 						res.channel = i;
@@ -161,9 +163,9 @@ int HorizonScheduler::schedule(cMessage *msg, int port)
 	ScheduleResult res;
 
 	if (waveConversion)
-		res = trySchedule(bcp->getBurstArrivalTime(), port);
+		res = trySchedule(msg, port);
 	else
-		res = trySchedule(bcp->getBurstArrivalTime(), port, bcp->getBurstChannel());
+		res = trySchedule(msg, port, bcp->getBurstChannel());
 
 	Schedule *sc = scheduleTables[port][res.channel];
 
@@ -171,12 +173,13 @@ int HorizonScheduler::schedule(cMessage *msg, int port)
 	{
 		if (res.dropped)
 		{
-			Burst *bst = check_and_cast<Burst *>(sc->getBurst());
-			int dropByteLength = 8 * (- res.offset.dbl()) * wdm->getDatarate(port);
-			int droppedByteLength = bst->dropPacketsFromBack(dropByteLength);
+			Burst *bst = check_and_cast<Burst *>(bcp->getBurst());
+			int dropByteLength = (- res.offset.dbl()) * wdm->getDatarate(port) / 8;
+			int droppedByteLength = bst->dropPacketsFromFront(dropByteLength);
 			simtime_t burstlength = bst->getBitLength() / wdm->getDatarate(port);
 			int restDroppableByteLength = bcp->getDroppableByteLength() - droppedByteLength;
 
+			bcp->setBurstArrivalTime(sc->getHorizon());
 			bcp->setBurstlength(burstlength);
 			bcp->setDroppableByteLength(restDroppableByteLength);
 		}
