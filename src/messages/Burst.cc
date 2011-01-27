@@ -57,6 +57,7 @@ void Burst::dropHead(int dropByteLength)
 				dropped += pkt->getByteLength();
 				delete pkt;
 			}
+			setRestHead(getRestHead() - dropped);
 		}
 	}
 }
@@ -78,10 +79,15 @@ void Burst::dropTail(int dropByteLength)
 				if (pkt == NULL)
 					opp_error("%s try to drop tail. But cPacketQueue was empty.", getName());
 
+				pkt = packets->remove(pkt);
+
+				if (pkt == NULL)
+					opp_error("%s try to remove a packet. But this packet dose not exist.", getName());
+
 				dropped += pkt->getByteLength();
-				packets->remove(pkt);
 				delete pkt;
 			}
+			setRestTail(getRestTail() - dropped);
 		}
 	}
 }

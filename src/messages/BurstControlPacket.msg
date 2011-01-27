@@ -27,8 +27,8 @@ message BurstControlPacket {
     IPAddress destAddress;
     simtime_t burstArrivalTime;
     simtime_t burstlength;
-    int burstPort;
-    int burstChannel;
     simtime_t bursthead;
     simtime_t bursttail;
+    int burstPort;
+    int burstChannel;
 }
