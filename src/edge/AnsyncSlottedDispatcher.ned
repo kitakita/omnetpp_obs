@@ -21,7 +21,7 @@ package omnetpp_obs.edge;
 simple AnsyncSlottedDispatcher like BurstDispatcher
 {
     parameters:
-        string ansyncOffsetFile = default("");
+        string droppableLengthFile = default("");
         double timeslot @unit("s");
         @display("i=block/classifier2");
     gates:

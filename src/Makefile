@@ -169,8 +169,6 @@ $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	common/WDMTable.h \
 	messages/BurstControlPacket_m.h
-$O/common/Schedule.o: common/Schedule.cc \
-	common/Schedule.h
 $O/common/WDMTable.o: common/WDMTable.cc \
 	common/WDMTable.h
 $O/core/OpticalSwitchFabric.o: core/OpticalSwitchFabric.cc \
@@ -231,15 +229,6 @@ $O/edge/PacketGenerator.o: edge/PacketGenerator.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
-$O/edge/MixedTimerBurstlengthBasedQueue.o: edge/MixedTimerBurstlengthBasedQueue.cc \
-	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
-	messages/Burst_m.h \
-	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
-	messages/Burst.h \
-	$(INET_PROJ)/src/base/INETDefs.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
-	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h \
-	edge/MixedTimerBurstlengthBasedQueue.h
 $O/edge/SlottedDispatcher.o: edge/SlottedDispatcher.cc \
 	messages/Burst.h \
 	common/IBurstScheduler.h \

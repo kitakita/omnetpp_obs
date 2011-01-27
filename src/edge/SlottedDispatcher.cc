@@ -70,11 +70,6 @@ void SlottedDispatcher::handleSendingBurst(cMessage *msg)
 	while (sendTime < simTime() + offset)
 		sendTime += timeslot;
 
-	ev << "Dispatcher send burst." << endl
-	   << "offset: " << offset << " | "
-	   << "sendtime: " << sendTime << " | "
-	   << "burstlength: " << burstlength << " | " << endl;
-
 	bcp->setSrcAddress(src);
 	bcp->setDestAddress(dest);
 	bcp->setBurst(bst);
@@ -85,14 +80,13 @@ void SlottedDispatcher::handleSendingBurst(cMessage *msg)
 	bcp->setBursthead(burstlength / 3);
 	bcp->setBursttail(burstlength / 3);
 
-	int headAndTail = (int)(burstlength / 3 * wdm->getDatarate(0) * 8).dbl();
+	int headAndTail = (int)(burstlength / 3 * wdm->getDatarate(0) / 8).dbl();
 	bst->setHead(headAndTail);
 	bst->setRestHead(headAndTail);
 	bst->setTail(headAndTail);
 	bst->setRestTail(headAndTail);
 
 	int channel = bsc->schedule(bcp, 0);
-
 	while (channel < 0)
 	{
 		sendTime += timeslot;
@@ -103,6 +97,12 @@ void SlottedDispatcher::handleSendingBurst(cMessage *msg)
     bcp->setBurstChannel(channel);
 
     send(bcp, "bcpg$o");
+
+	ev << "Dispatcher send BCP." << endl
+	   << "offset: " << offset << " | "
+	   << "sendtime: " << sendTime << " | "
+	   << "burstlength: " << burstlength << endl;
+
     sendDelayed(bst, sendTime - simTime(), "burstg$o", channel);
 }
 

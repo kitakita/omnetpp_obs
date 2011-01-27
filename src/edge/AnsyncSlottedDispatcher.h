@@ -17,14 +17,15 @@
 #define __OMNETPP_OBS_ANSYNCSLOTTEDDISPATCHER_H_
 
 #include <omnetpp.h>
-#include "OffsetTable.h"
+
 #include "IBurstScheduler.h"
+#include "OffsetTable.h"
 #include "WDMTable.h"
 
-struct NodeOffset
+struct DroppableLength
 {
-    simtime_t head;
-    simtime_t tail;
+    simtime_t bursthead;
+    simtime_t bursttail;
 };
 
 /**
@@ -37,9 +38,9 @@ class AnsyncSlottedDispatcher : public cSimpleModule
 	OffsetTable *oft;
 	WDMTable *wdm;
 
-	typedef std::map<IPAddress, NodeOffset> AnsyncOffsetTable;
-	typedef std::pair<IPAddress, NodeOffset> AnsyncOffset;
-	AnsyncOffsetTable ansyncOffsetTable;
+	typedef std::map<IPAddress, DroppableLength> DroppableLengthTable;
+	typedef std::pair<IPAddress, DroppableLength> DroppableLengthPair;
+	DroppableLengthTable droppableLengthTable;
 
 	simtime_t timeslot;
 
@@ -47,9 +48,11 @@ class AnsyncSlottedDispatcher : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 
     virtual void parse();
-	virtual void sendBurst(cMessage *msg);
-	virtual void receiveBurst(cMessage *msg);
-	virtual NodeOffset getAnsyncOffset(const IPAddress& address);
+	virtual void handleSendingBurst(cMessage *msg);
+	virtual void handleReceivedBurst(cMessage *msg);
+	virtual simtime_t getMaxBursthead(const IPAddress& address);
+	virtual simtime_t getMaxBursttail(const IPAddress& address);
+	virtual DroppableLength getDroppableLength(const IPAddress& address);
 };
 
 #endif

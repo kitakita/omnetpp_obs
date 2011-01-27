@@ -14,10 +14,13 @@
 // 
 
 #include <fstream>
+
 #include "AnsyncSlottedDispatcher.h"
+
 #include "IPAddress.h"
 #include "IPAddressResolver.h"
 #include "IPControlInfo.h"
+
 #include "Burst.h"
 #include "BurstControlPacket.h"
 #include "BurstSchedulerAccess.h"
@@ -41,14 +44,16 @@ void AnsyncSlottedDispatcher::handleMessage(cMessage *msg)
 {
 	std::string name = msg->getArrivalGate()->getName();
 	if (name == "in")
-		sendBurst(msg);
+		handleSendingBurst(msg);
+	else if (dynamic_cast<Burst *>(msg) != NULL)
+		handleReceivedBurst(msg);
 	else
-		receiveBurst(msg);
+		send(msg, "out");
 }
 
 void AnsyncSlottedDispatcher::parse()
 {
-	const char *destAddrs = par("ansyncOffsetFile");
+	const char *destAddrs = par("droppableLengthFile");
 
 	std::ifstream ifs(destAddrs);
 	std::string line;
@@ -56,22 +61,23 @@ void AnsyncSlottedDispatcher::parse()
 	{
 		cStringTokenizer tokenizer(line.c_str());
 		IPAddress dest = IPAddressResolver().resolve(tokenizer.nextToken()).get4();
-		NodeOffset nodeOffset;
-		nodeOffset.head = atof(tokenizer.nextToken());
-		nodeOffset.tail = atof(tokenizer.nextToken());
-		ansyncOffsetTable.insert(AnsyncOffset(dest, nodeOffset));
+		DroppableLength data = { atof(tokenizer.nextToken()), atof(tokenizer.nextToken()) };
+		droppableLengthTable.insert(DroppableLengthPair(dest, data));
 	}
 	ifs.close();
 
-	AnsyncOffsetTable::iterator it = ansyncOffsetTable.begin();
-	while (it != ansyncOffsetTable.end())
+	ev << getFullName() << " setting" << endl;
+	DroppableLengthTable::iterator it = droppableLengthTable.begin();
+	while (it != droppableLengthTable.end())
 	{
-		ev << "IPAddress: " << it->first << " HeadOffset: " << (it->second).head << endl;
+		ev << "IPAddress: " << it->first
+		   << " Bursthead: " << (it->second).bursthead
+           << " Bursttail: " << (it->second).bursttail << endl;
 		it++;
 	}
 }
 
-void AnsyncSlottedDispatcher::sendBurst(cMessage *msg)
+void AnsyncSlottedDispatcher::handleSendingBurst(cMessage *msg)
 {
 	Burst *bst = check_and_cast<Burst *>(msg);
 
@@ -84,109 +90,117 @@ void AnsyncSlottedDispatcher::sendBurst(cMessage *msg)
 	IPAddress dest = ctrl->getDestAddr();
 
 	simtime_t offset = oft->getOffset(dest);
-	NodeOffset nodeOffset = getAnsyncOffset(dest);
 	simtime_t burstlength = bst->getBitLength() / wdm->getDatarate(0);
+	simtime_t maxBursthead = getMaxBursthead(dest);
+	simtime_t maxBursttail = getMaxBursttail(dest);
 
 	if (burstlength > timeslot)
-	{
 		opp_error("%s length (%f [s]) larger than timeslot (%f [s]).", bst, burstlength.dbl(), timeslot.dbl());
-	}
 
-	simtime_t sHead = timeslot * (int)(simTime() / timeslot);
-	simtime_t sTail = sHead + timeslot;
-	simtime_t fsHead = sHead + nodeOffset.head;
-	simtime_t fsTail = sTail - nodeOffset.tail;
-	simtime_t fs = fsTail - fsHead;
+	simtime_t slothead = timeslot * (int)(simTime() / timeslot);
+	simtime_t slottail = slothead + timeslot;
+	simtime_t fixedSlothead = slothead + maxBursthead;
+	simtime_t fixedSlottail = slottail - maxBursttail;
+	simtime_t fixedTimeslot = fixedSlottail - fixedSlothead;
 
-	if (fs <= 0)
-	{
-		opp_error("fixed slot length (%f [s]) larger than timeslot (%f [s]).", fs.dbl(), timeslot.dbl());
-	}
+	if (fixedTimeslot <= 0)
+		opp_error("In %s, fixed timeslot (%f [s]) larger than timeslot (%f [s]).", getFullName(), fixedTimeslot.dbl(), timeslot.dbl());
 
-	simtime_t dTop = 0;
-	simtime_t dBtm = 0;
-	simtime_t sendTime = 0;
+	simtime_t bursthead = 0;
+	simtime_t bursttail = 0;
+	simtime_t sendtime = 0;
 
-	if (burstlength <= fs)
-		sendTime = fsHead;
+	if (burstlength <= fixedTimeslot)
+		sendtime = fixedSlothead;
 	else
 	{
-		sendTime = fsTail - burstlength;
-		if (sendTime < sHead)
+		sendtime = fixedSlottail - burstlength;
+		if (sendtime < slothead)
 		{
-			sendTime = sTail - burstlength;
-			if (sendTime > fsHead)
+			sendtime = slottail - burstlength;
+			if (sendtime > fixedSlothead)
 			{
-				sendTime = fsHead;
-				dBtm = sendTime + burstlength - fsTail;
+				sendtime = fixedSlothead;
+				bursttail = sendtime + burstlength - fixedSlottail;
 			}
 			else
 			{
-				dTop = fsHead - sendTime;
-				dBtm = nodeOffset.tail;
+				bursthead = fixedSlothead - sendtime;
+				bursttail = maxBursttail;
 			}
 		}
 		else
-		{
-			dTop = fsHead - sendTime;
-		}
+			bursthead = fixedSlothead - sendtime;
 	}
 
-	while (sendTime < simTime() + offset)
-	{
-		sendTime += timeslot;
-	}
+	while (sendtime < simTime() + offset)
+		sendtime += timeslot;
 
-	ev << "Dispatcher send burst." << endl
-	   << "offset: " << offset << " | "
-	   << "burstlength: " << burstlength << " | "
-	   << "sendTime: " << sendTime << " | "
-	   << "droppableTop: " << dTop << " | "
-	   << "droppableBtm: " << dBtm << endl;
+
 
 	bcp->setSrcAddress(src);
 	bcp->setDestAddress(dest);
-	bcp->setBurstArrivalTime(sendTime);
+	bcp->setBurstArrivalTime(sendtime);
 	bcp->setBurstlength(burstlength);
 	bcp->setBurstPort(0);
 	bcp->setBurst(bst);
-	bcp->setBursthead(dTop);
-	bcp->setBursttail(dBtm);
+	bcp->setBursthead(bursthead);
+	bcp->setBursttail(bursttail);
+
+	int headByteLength = (int)(bursthead * wdm->getDatarate(0) / 8).dbl();
+	int tailByteLength = (int)(bursttail * wdm->getDatarate(0) / 8).dbl();
+	bst->setHead(headByteLength);
+	bst->setRestHead(headByteLength);
+	bst->setTail(tailByteLength);
+	bst->setRestTail(tailByteLength);
 
 	int channel = bsc->schedule(bcp, 0);
 	while (channel < 0)
 	{
-		sendTime += timeslot;
-		bcp->setBurstArrivalTime(sendTime);
+		sendtime += timeslot;
+		bcp->setBurstArrivalTime(sendtime);
 		channel = bsc->schedule(bcp, 0);
 	}
 
     bcp->setBurstChannel(channel);
 
     send(bcp, "bcpg$o");
-    sendDelayed(bst, sendTime - simTime(), "burstg$o", channel);
+
+    ev << "Dispatcher send burst." << endl
+	   << "offset: " << offset << " | "
+	   << "sendTime: " << sendtime << " | "
+	   << "burstlength: " << burstlength << " | "
+	   << "bursthead: " << bursthead << " | "
+	   << "bursttail: " << bursttail << endl;
+
+    sendDelayed(bst, sendtime - simTime(), "burstg$o", channel);
 }
 
-void AnsyncSlottedDispatcher::receiveBurst(cMessage *msg)
+void AnsyncSlottedDispatcher::handleReceivedBurst(cMessage *msg)
 {
-	if (dynamic_cast<Burst *>(msg) != NULL)
-	{
-		Burst *bst = check_and_cast<Burst *>(msg);
-		sendDelayed(msg, bst->getBitLength() / wdm->getDatarate(0), "out");
-	}
-	else if (dynamic_cast<BurstControlPacket *>(msg) != NULL)
-		send(msg, "out");
+	Burst *bst = check_and_cast<Burst *>(msg);
+	simtime_t txFinishTime = (bst->getByteLength() - bst->getTail() + bst->getRestTail()) * 8 / wdm->getDatarate(0);
+
+	sendDelayed(msg, txFinishTime, "out");
 }
 
-NodeOffset AnsyncSlottedDispatcher::getAnsyncOffset(const IPAddress& address)
+simtime_t AnsyncSlottedDispatcher::getMaxBursthead(const IPAddress& address)
 {
-	AnsyncOffsetTable::iterator it = ansyncOffsetTable.find(address);
-	if (it != ansyncOffsetTable.end())
-		return it->second;
-	else
-	{
-		opp_error("%s not found in this ansyncOffsetTable.", address.str().c_str());
-		NodeOffset nodeOffset = {0, 0};
-		return nodeOffset;
-	}
+	DroppableLength data = getDroppableLength(address);
+	return data.bursthead;
 }
+
+simtime_t AnsyncSlottedDispatcher::getMaxBursttail(const IPAddress& address)
+{
+	DroppableLength data = getDroppableLength(address);
+	return data.bursttail;
+}
+
+DroppableLength AnsyncSlottedDispatcher::getDroppableLength(const IPAddress& address)
+{
+	DroppableLengthTable::iterator it = droppableLengthTable.find(address);
+	if (it == droppableLengthTable.end())
+		opp_error("IP %s is not found in %s.", address.str().c_str(), getFullName());
+	return it->second;
+}
+

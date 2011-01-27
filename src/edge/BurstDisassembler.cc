@@ -45,6 +45,8 @@ void BurstDisassembler::handleMessage(cMessage *msg)
 		handleBurst(msg);
 	else if (dynamic_cast<BurstControlPacket *>(msg) != NULL)
 		handleBurstControlPacket(msg);
+	else
+		delete msg;
 }
 
 void BurstDisassembler::finish()
