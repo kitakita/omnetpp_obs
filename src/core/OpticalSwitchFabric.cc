@@ -41,7 +41,6 @@ void OpticalSwitchFabric::handleMessage(cMessage *msg)
 		ev << getFullName() << ": " << msg->getName() << " switched port " << index << " to port " << port << "." << endl;
 		send(msg, "burstg$o", port);
 		disconnect(index);
-		printSwitch();
 	}
 	else
 	{

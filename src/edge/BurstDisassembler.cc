@@ -51,6 +51,9 @@ void BurstDisassembler::handleMessage(cMessage *msg)
 
 void BurstDisassembler::finish()
 {
+	if (numBursts == 0)
+		numBursts = 1;
+
     recordScalar("Disassembler-numBursts", numBursts);
     recordScalar("Disassembler-numBCPs", numBCPs);
     recordScalar("Disassembler-burstPerSec", burstPerSec);
