@@ -47,6 +47,8 @@ void PacketGenerator::initialize()
 		cMessage *timer = new cMessage("sendTimer");
 		scheduleAt(startTime, timer);
 	}
+
+	ev << getFullName() << " packetInterval: " << (double)par("packetInterval") << " [s]" << endl;
 }
 
 void PacketGenerator::handleMessage(cMessage *msg)
