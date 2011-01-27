@@ -66,13 +66,14 @@ void AnsyncSlottedDispatcher::parse()
 	}
 	ifs.close();
 
-	ev << getFullName() << " setting" << endl;
+	ev << getFullName() << " setting" << endl
+	   << "IPAddress\tBursthead\tBursttail" << endl;
 	DroppableLengthTable::iterator it = droppableLengthTable.begin();
+	char buf[32];
 	while (it != droppableLengthTable.end())
 	{
-		ev << "IPAddress: " << it->first
-		   << " Bursthead: " << (it->second).bursthead
-           << " Bursttail: " << (it->second).bursttail << endl;
+		sprintf(buf, "%f\t%f", (it->second).bursthead.dbl(), (it->second).bursttail.dbl());
+		ev << it->first << "\t" << buf << endl;
 		it++;
 	}
 }
