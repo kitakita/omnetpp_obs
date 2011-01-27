@@ -17,6 +17,7 @@
 #define __OMNETPP_OBS_SLOTTEDDISPATCHER_H_
 
 #include <omnetpp.h>
+
 #include "OffsetTable.h"
 #include "IBurstScheduler.h"
 #include "WDMTable.h"
@@ -36,8 +37,8 @@ protected:
 	virtual void initialize();
 	virtual void handleMessage(cMessage *msg);
 
-	virtual void sendBurst(cMessage *msg);
-	virtual void receiveBurst(cMessage *msg);
+	virtual void handleSendingBurst(cMessage *msg);
+	virtual void handleReceivedBurst(cMessage *msg);
 };
 
 #endif

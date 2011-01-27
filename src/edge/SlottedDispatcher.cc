@@ -14,8 +14,10 @@
 // 
 
 #include "SlottedDispatcher.h"
+
 #include "IPAddress.h"
 #include "IPControlInfo.h"
+
 #include "Burst.h"
 #include "BurstControlPacket.h"
 #include "BurstSchedulerAccess.h"
@@ -37,12 +39,14 @@ void SlottedDispatcher::handleMessage(cMessage *msg)
 {
 	std::string name = msg->getArrivalGate()->getName();
 	if (name == "in")
-		sendBurst(msg);
+		handleSendingBurst(msg);
+	else if (dynamic_cast<Burst *>(msg) != NULL)
+		handleReceivedBurst(msg);
 	else
-		receiveBurst(msg);
+		send(msg, "out");
 }
 
-void SlottedDispatcher::sendBurst(cMessage *msg)
+void SlottedDispatcher::handleSendingBurst(cMessage *msg)
 {
 	Burst *bst = check_and_cast<Burst *>(msg);
 
@@ -55,18 +59,16 @@ void SlottedDispatcher::sendBurst(cMessage *msg)
 	IPAddress dest = ctrl->getDestAddr();
 
 	simtime_t offset = oft->getOffset(dest);
-	simtime_t sendTime;
 	simtime_t burstlength = bst->getBitLength() / wdm->getDatarate(0);
-
-	if ((simTime() + offset).raw() % timeslot.raw() == 0)
-		sendTime = timeslot * (int)((simTime() + offset) / timeslot);
-	else
-		sendTime = timeslot * ((int)((simTime() + offset) / timeslot) + 1);
 
 	if (burstlength > timeslot)
 	{
 		opp_error("%s length (%f [s]) larger than timeslot (%f [s]).", bst, burstlength.dbl(), timeslot.dbl());
 	}
+
+	simtime_t sendTime = timeslot * (int)((simTime() + offset) / timeslot);
+	while (sendTime < simTime() + offset)
+		sendTime += timeslot;
 
 	ev << "Dispatcher send burst." << endl
 	   << "offset: " << offset << " | "
@@ -75,20 +77,27 @@ void SlottedDispatcher::sendBurst(cMessage *msg)
 
 	bcp->setSrcAddress(src);
 	bcp->setDestAddress(dest);
+	bcp->setBurst(bst);
 	bcp->setBurstArrivalTime(sendTime);
 	bcp->setBurstlength(burstlength);
 	bcp->setBurstPort(0);
 	bcp->setBurstChannel(0);
-	bcp->setBurst(bst);
-	bcp->setBursthead(bst->getByteLength() / 3);
-	bcp->setBursttail(bst->getByteLength() / 3);
+	bcp->setBursthead(burstlength / 3);
+	bcp->setBursttail(burstlength / 3);
+
+	int headAndTail = (int)(burstlength / 3 * wdm->getDatarate(0) * 8).dbl();
+	bst->setHead(headAndTail);
+	bst->setRestHead(headAndTail);
+	bst->setTail(headAndTail);
+	bst->setRestTail(headAndTail);
 
 	int channel = bsc->schedule(bcp, 0);
+
 	while (channel < 0)
 	{
-		channel = bsc->schedule(bcp, 0);
 		sendTime += timeslot;
 		bcp->setBurstArrivalTime(sendTime);
+		channel = bsc->schedule(bcp, 0);
 	}
 
     bcp->setBurstChannel(channel);
@@ -97,8 +106,11 @@ void SlottedDispatcher::sendBurst(cMessage *msg)
     sendDelayed(bst, sendTime - simTime(), "burstg$o", channel);
 }
 
-void SlottedDispatcher::receiveBurst(cMessage *msg)
+void SlottedDispatcher::handleReceivedBurst(cMessage *msg)
 {
-	send(msg, "out");
+	Burst *bst = check_and_cast<Burst *>(msg);
+	simtime_t txFinishTime = (bst->getByteLength() - bst->getTail() + bst->getRestTail()) * 8 / wdm->getDatarate(0);
+
+	sendDelayed(msg, txFinishTime, "out");
 }
 
