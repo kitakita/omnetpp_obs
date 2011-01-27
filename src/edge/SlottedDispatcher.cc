@@ -80,7 +80,7 @@ void SlottedDispatcher::handleSendingBurst(cMessage *msg)
 	bcp->setBursthead(burstlength / 3);
 	bcp->setBursttail(burstlength / 3);
 
-	int headAndTail = (int)(burstlength / 3 * wdm->getDatarate(0) / 8).dbl();
+	int headAndTail = ((int)(burstlength / 3 * wdm->getDatarate(0)).dbl()+7)>>3;
 	bst->setHead(headAndTail);
 	bst->setRestHead(headAndTail);
 	bst->setTail(headAndTail);

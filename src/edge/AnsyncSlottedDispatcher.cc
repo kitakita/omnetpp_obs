@@ -148,8 +148,8 @@ void AnsyncSlottedDispatcher::handleSendingBurst(cMessage *msg)
 	bcp->setBursthead(bursthead);
 	bcp->setBursttail(bursttail);
 
-	int headByteLength = (int)(bursthead * wdm->getDatarate(0) / 8).dbl();
-	int tailByteLength = (int)(bursttail * wdm->getDatarate(0) / 8).dbl();
+	int headByteLength = ((int)(bursthead * wdm->getDatarate(0)).dbl()+7)>>3;
+	int tailByteLength = ((int)(bursttail * wdm->getDatarate(0)).dbl()+7)>>3;
 	bst->setHead(headByteLength);
 	bst->setRestHead(headByteLength);
 	bst->setTail(tailByteLength);

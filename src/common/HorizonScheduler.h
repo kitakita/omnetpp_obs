@@ -43,12 +43,13 @@ class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 	bool droppable;
 	bool waveConversion;
 
-	typedef std::vector<Schedule> ScheduleTable;
+	typedef std::vector<Schedule *> ScheduleTable;
 	typedef std::vector<ScheduleTable> ScheduleTables;
 	ScheduleTables scheduleTables;
 
 	virtual void initialize();
 	virtual void handleMessage(cMessage *msg);
+	virtual void finish();
 
 	virtual void printSchedule(int outPort);
 	virtual void updateDisplayString();

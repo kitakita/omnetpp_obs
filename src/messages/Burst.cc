@@ -39,7 +39,7 @@ void Burst::initialize()
 
 void Burst::dropHead(int dropByteLength)
 {
-	if (getHead() > dropByteLength)
+	if (getHead() < dropByteLength)
 		opp_error("%s try to drop head. But dropByteLength (%d [byte]) lager than head (%d [byte]).", getName(), dropByteLength, getHead());
 	else
 	{

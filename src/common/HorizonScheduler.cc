@@ -42,7 +42,10 @@ void HorizonScheduler::initialize()
 			ScheduleTable table;
 			scheduleTables.push_back(table);
 		}
-		Schedule sch = { 0, 0, NULL };
+		Schedule *sch = new Schedule;
+		sch->horizon = 0;
+		sch->tail = 0;
+		sch->burst = NULL;
 		scheduleTables.back().push_back(sch);
 	}
 
@@ -54,12 +57,27 @@ void HorizonScheduler::handleMessage(cMessage *msg)
 	opp_error("%s cannot receive any messages (receive: %s).", getFullName(), msg);
 }
 
+void HorizonScheduler::finish()
+{
+	ScheduleTables::iterator it = scheduleTables.begin();
+	while (it != scheduleTables.end())
+	{
+		ScheduleTable::iterator jt = it->begin();
+		while (jt != it->end())
+		{
+			delete *jt;
+			jt++;
+		}
+		it++;
+	}
+}
+
 void HorizonScheduler::printSchedule(int port)
 {
 	for (unsigned int i = 0; i < scheduleTables[port].size(); i++)
 	{
 		char str[48];
-		sprintf(str, " | ch%2d:%16.12f", i, scheduleTables[port][i].horizon.dbl());
+		sprintf(str, " | ch%2d:%16.12f", i, scheduleTables[port][i]->horizon.dbl());
 		ev << str;
 	}
 	ev << endl;
@@ -89,10 +107,10 @@ ScheduleResult HorizonScheduler::trySchedule(cMessage *msg, int port, int channe
 {
 	BurstControlPacket *bcp = check_and_cast<BurstControlPacket *>(msg);
 
-	Schedule sc = channel < 0 ? scheduleTables[port][0] : scheduleTables[port][channel];
-	ScheduleResult res = { channel < 0 ? 0 : channel, bcp->getBurstArrivalTime() - sc.horizon, 0, 0 };
+	Schedule *sch = channel < 0 ? scheduleTables[port][0] : scheduleTables[port][channel];
+	ScheduleResult res = { channel < 0 ? 0 : channel, bcp->getBurstArrivalTime() - sch->horizon, 0, 0 };
 
-	if (sc.horizon == 0)
+	if (sch->horizon == 0)
 		return res;
 
 	if (res.offset < 0)
@@ -122,16 +140,16 @@ ScheduleResult HorizonScheduler::trySchedule(cMessage *msg, int port, int channe
 
 	for (unsigned int i = 1; i < scheduleTables[port].size(); i++)
 	{
-		sc = scheduleTables[port][i];
+		sch = scheduleTables[port][i];
 
-		if (sc.horizon == 0)
+		if (sch->horizon == 0)
 		{
 			res.offset = bcp->getBurstArrivalTime();
 			res.channel = i;
 			return res;
 		}
 
-		offset = bcp->getBurstArrivalTime() - sc.horizon;
+		offset = bcp->getBurstArrivalTime() - sch->horizon;
 
 		if (offset >= 0)
 		{
@@ -189,24 +207,24 @@ int HorizonScheduler::schedule(cMessage *msg, int port)
 	}
 
 	// schedule success
-	Schedule sch = scheduleTables[port][res.channel];
+	Schedule *sch = scheduleTables[port][res.channel];
 	if (res.droppedHead > 0)
 	{
 		Burst *bst = check_and_cast<Burst *>(bcp->getBurst());
-		int dropByteLength = res.droppedHead.dbl() * wdm->getDatarate(port) / 8;
+		int dropByteLength = ((int)(res.droppedHead.dbl() * wdm->getDatarate(port))+7)>>3;
 		bst->dropHead(dropByteLength);
 	}
 
 	if (res.droppedTail > 0)
 	{
-		Burst *bst = check_and_cast<Burst *>(sch.burst);
-		int dropByteLength = res.droppedTail.dbl() * wdm->getDatarate(port) / 8;
+		Burst *bst = check_and_cast<Burst *>(sch->burst);
+		int dropByteLength = ((int)(res.droppedTail.dbl() * wdm->getDatarate(port))+7)>>3;
 		bst->dropTail(dropByteLength);
 	}
 
-	sch.horizon = bcp->getBurstArrivalTime() + bcp->getBurstlength();
-	sch.tail = bcp->getBursttail();
-	sch.burst = bcp->getBurst();
+	sch->horizon = bcp->getBurstArrivalTime() + bcp->getBurstlength();
+	sch->tail = bcp->getBursttail();
+	sch->burst = bcp->getBurst();
 
 	ev << "after ";
 	printSchedule(port);
