@@ -45,7 +45,7 @@ module EdgeNode
         classifier: PacketClassifier {
             @display("p=135,190");
         }
-        queue[numDestinations]: MixedTimerBurstlengthBasedQueue {
+        queue[numDestinations]: MixedTimeBurstlengthBasedQueue {
             @display("p=250,190,column,80;q=queue");
         }
         dispatcher: <dispatcherType> like BurstDispatcher {

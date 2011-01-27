@@ -63,7 +63,7 @@ OBJS = \
     $O/core/OpticalSwitchFabric.o \
     $O/edge/AnsyncSlottedDispatcher.o \
     $O/edge/BurstDisassembler.o \
-    $O/edge/MixedTimerBurstlengthBasedQueue.o \
+    $O/edge/MixedTimeBurstlengthBasedQueue.o \
     $O/edge/OffsetTable.o \
     $O/edge/PacketClassifier.o \
     $O/edge/PacketGenerator.o \
@@ -287,6 +287,15 @@ $O/edge/PacketSink.o: edge/PacketSink.cc \
 	$(INET_PROJ)/src/networklayer/contract/IPvXAddress.h \
 	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPv6Address.h \
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
+$O/edge/MixedTimeBurstlengthBasedQueue.o: edge/MixedTimeBurstlengthBasedQueue.cc \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo.h \
+	messages/Burst_m.h \
+	$(INET_PROJ)/src/networklayer/contract/IPControlInfo_m.h \
+	messages/Burst.h \
+	edge/MixedTimeBurstlengthBasedQueue.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
 	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/networklayer/contract/IPProtocolId_m.h
 $O/edge/OffsetTable.o: edge/OffsetTable.cc \
