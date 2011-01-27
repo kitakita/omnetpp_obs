@@ -35,13 +35,11 @@ class Burst : public Burst_Base
 
 	cPacketQueue *getPacketQueue() { return packets; }
 	virtual void setPacketQueue(cPacketQueue *queue) { packets = queue; };
-
-	virtual int dropPacketsFromFront(int byteLength);
-	virtual int dropPacketsFromBack(int byteLength);
-
+	virtual void dropHead(int dropByteLength);
+	virtual void dropTail(int dropByteLength);
 	int getNumPackets() const { return packets->length(); }
-	int64 getBitLength() const { return packets->getBitLength(); }
-	int64 getByteLength() const { return packets->getByteLength(); }
+	int getBitLength() const { return packets->getBitLength(); }
+	int getByteLength() const { return packets->getByteLength(); }
 };
 
 #endif /* BURST_H_ */

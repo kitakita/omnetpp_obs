@@ -37,35 +37,51 @@ void Burst::initialize()
 	packets = NULL;
 }
 
-int Burst::dropPacketsFromFront(int dropByteLength)
+void Burst::dropHead(int dropByteLength)
 {
-	int droppedByteLength = 0;
-	while (droppedByteLength < dropByteLength)
+	if (getHead() > dropByteLength)
+		opp_error("%s try to drop head. But dropByteLength (%d [byte]) lager than head (%d [byte]).", getName(), dropByteLength, getHead());
+	else
 	{
-		if (packets->empty())
-			break;
+		int needDrop = dropByteLength - getHead() + getRestHead();
+		if (needDrop > 0)
+		{
+			int dropped = 0;
+			while (dropped < needDrop)
+			{
+				cPacket *pkt = packets->pop();
 
-		cPacket *pkt = packets->pop();
-		droppedByteLength += pkt->getByteLength();
-		delete pkt;
+				if (pkt == NULL)
+					opp_error("%s try to drop head. But cPacketQueue was empty.", getName());
+
+				dropped += pkt->getByteLength();
+				delete pkt;
+			}
+		}
 	}
-
-	return droppedByteLength;
 }
 
-int Burst::dropPacketsFromBack(int dropByteLength)
+void Burst::dropTail(int dropByteLength)
 {
-	int droppedByteLength = 0;
-	while (droppedByteLength < dropByteLength)
+	if (getTail() > dropByteLength)
+		opp_error("%s try to drop tail. But dropByteLength (%d [byte]) lager than tail (%d [byte]).", getName(), dropByteLength, getTail());
+	else
 	{
-		if (packets->empty())
-			break;
+		int needDrop = dropByteLength - getTail() + getRestTail();
+		if (needDrop > 0)
+		{
+			int dropped = 0;
+			while (dropped < needDrop)
+			{
+				cPacket *pkt = packets->back();
 
-		cPacket *pkt = packets->back();
-		packets->remove(pkt);
-		droppedByteLength += pkt->getByteLength();
-		delete pkt;
+				if (pkt == NULL)
+					opp_error("%s try to drop tail. But cPacketQueue was empty.", getName());
+
+				dropped += pkt->getByteLength();
+				packets->remove(pkt);
+				delete pkt;
+			}
+		}
 	}
-
-	return droppedByteLength;
 }

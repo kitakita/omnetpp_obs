@@ -29,4 +29,6 @@ message BurstControlPacket {
     simtime_t burstlength;
     int burstPort;
     int burstChannel;
+    simtime_t bursthead;
+    simtime_t bursttail;
 }

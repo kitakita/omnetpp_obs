@@ -125,6 +125,6 @@ void ControlUnit::printBCP(cMessage *msg)
 	<< " Burstlength: " << bcp->getBurstlength()
 	<< " BurstPort: " << bcp->getBurstPort()
 	<< " BurstChannel: " << bcp->getBurstChannel()
-	<< " DroppableByteLength: " << bcp->getDroppableByteLength()
-	<< " Burst: " << bcp->getBurst()->getName() << endl;
+	<< " Bursthead: " << bcp->getBursthead()
+	<< " Bursttail: " << bcp->getBursttail() << endl;
 }

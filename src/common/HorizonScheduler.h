@@ -18,14 +18,21 @@
 
 #include <omnetpp.h>
 #include "IBurstScheduler.h"
-#include "Schedule.h"
 #include "WDMTable.h"
+
+struct Schedule
+{
+	simtime_t horizon;
+	simtime_t tail;
+	cMessage *burst;
+};
 
 struct ScheduleResult
 {
+	int channel;
     simtime_t offset;
-    int channel;
-    bool dropped;
+    simtime_t droppedHead;
+    simtime_t droppedTail;
 };
 
 class HorizonScheduler : public cSimpleModule, public IBurstScheduler
@@ -36,13 +43,12 @@ class HorizonScheduler : public cSimpleModule, public IBurstScheduler
 	bool droppable;
 	bool waveConversion;
 
-	typedef std::vector<Schedule *> ScheduleTable;
+	typedef std::vector<Schedule> ScheduleTable;
 	typedef std::vector<ScheduleTable> ScheduleTables;
 	ScheduleTables scheduleTables;
 
 	virtual void initialize();
 	virtual void handleMessage(cMessage *msg);
-	virtual void finish();
 
 	virtual void printSchedule(int outPort);
 	virtual void updateDisplayString();

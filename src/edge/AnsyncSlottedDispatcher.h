@@ -21,6 +21,12 @@
 #include "IBurstScheduler.h"
 #include "WDMTable.h"
 
+struct NodeOffset
+{
+    simtime_t head;
+    simtime_t tail;
+};
+
 /**
  * TODO - Generated class
  */
@@ -31,8 +37,8 @@ class AnsyncSlottedDispatcher : public cSimpleModule
 	OffsetTable *oft;
 	WDMTable *wdm;
 
-	typedef std::map<IPAddress, int> AnsyncOffsetTable;
-	typedef std::pair<IPAddress, int> AnsyncOffset;
+	typedef std::map<IPAddress, NodeOffset> AnsyncOffsetTable;
+	typedef std::pair<IPAddress, NodeOffset> AnsyncOffset;
 	AnsyncOffsetTable ansyncOffsetTable;
 
 	simtime_t timeslot;
@@ -43,7 +49,7 @@ class AnsyncSlottedDispatcher : public cSimpleModule
     virtual void parse();
 	virtual void sendBurst(cMessage *msg);
 	virtual void receiveBurst(cMessage *msg);
-	virtual simtime_t getAnsyncOffset(const IPAddress& address);
+	virtual NodeOffset getAnsyncOffset(const IPAddress& address);
 };
 
 #endif

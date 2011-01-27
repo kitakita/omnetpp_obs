@@ -57,7 +57,6 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 # Object files for local .cc and .msg files
 OBJS = \
     $O/common/HorizonScheduler.o \
-    $O/common/Schedule.o \
     $O/common/WDMTable.o \
     $O/core/ControlUnit.o \
     $O/core/CoreRoutingTable.o \
@@ -158,19 +157,18 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/common/HorizonScheduler.o: common/HorizonScheduler.cc \
+	messages/Burst_m.h \
 	messages/ConnectionEvent_m.h \
 	common/HorizonScheduler.h \
-	messages/Burst.h \
 	common/IBurstScheduler.h \
-	$(INET_PROJ)/src/base/INETDefs.h \
-	common/WDMTable.h \
-	messages/BurstControlPacket_m.h \
-	messages/Burst_m.h \
+	messages/Burst.h \
 	messages/BurstControlPacket.h \
+	$(INET_PROJ)/src/base/INETDefs.h \
 	common/WDMTableAccess.h \
-	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
 	$(INET_PROJ)/src/base/ModuleAccess.h \
-	common/Schedule.h
+	$(INET_PROJ)/src/networklayer/contract/IPAddress.h \
+	common/WDMTable.h \
+	messages/BurstControlPacket_m.h
 $O/common/Schedule.o: common/Schedule.cc \
 	common/Schedule.h
 $O/common/WDMTable.o: common/WDMTable.cc \
