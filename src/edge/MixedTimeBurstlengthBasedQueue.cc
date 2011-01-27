@@ -56,6 +56,13 @@ void MixedTimeBurstlengthBasedQueue::handleMessage(cMessage *msg)
 		opp_error("Receive unknown message (%s).", msg);
 		delete msg;
 	}
+
+	if (ev.isGUI())
+	{
+		char buf[32];
+		sprintf(buf, "%d packets", queue->length());
+		getDisplayString().setTagArg("t", 0, buf);
+	}
 }
 
 void MixedTimeBurstlengthBasedQueue::handleTimeout()
@@ -110,4 +117,3 @@ void MixedTimeBurstlengthBasedQueue::handlePacket(cMessage *msg)
     	}
     }
 }
-

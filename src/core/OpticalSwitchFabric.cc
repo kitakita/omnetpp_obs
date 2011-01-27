@@ -22,7 +22,7 @@ void OpticalSwitchFabric::initialize()
 	int gatesize = gateSize("burstg$i");
 
 	for (int i = 0; i < gatesize; i++)
-		connectionTable.push_back(-1);
+		connectionTable.push_back(-1); // disconnect = -1
 
 	dropCounter = 0;
 
@@ -34,21 +34,19 @@ void OpticalSwitchFabric::initialize()
 void OpticalSwitchFabric::handleMessage(cMessage *msg)
 {
 	int index = msg->getArrivalGate()->getIndex();
-	int port = connectionTable.at(index);
+	int port = connectionTable[index];
 
 	if (port >= 0)
 	{
-		ev << "Optical switch: " << msg->getName() << " through port " << index << " to " << port << "." << endl;
-
+		ev << getFullName() << ": " << msg->getName() << " switched port " << index << " to port " << port << "." << endl;
 		send(msg, "burstg$o", port);
-
+		disconnect(index);
 		printSwitch();
 	}
 	else
 	{
-		ev << "Optical switch: port " << port << " disconnected. Burst was dropped." << endl;
+		ev << getFullName() << ": port " << port << " disconnected. Burst was dropped." << endl;
 		dropCounter++;
-
 		delete msg;
 	}
 
@@ -65,42 +63,48 @@ void OpticalSwitchFabric::finish()
 	recordScalar("OpticalSwitchFabric-dropCounter", dropCounter);
 }
 
-void OpticalSwitchFabric::connect(int in, int out)
+void OpticalSwitchFabric::connect(unsigned int in, unsigned int out)
 {
-	Enter_Method("Switching port: input %d to output %d.", in, out);
+	Enter_Method("Switching port: in-port %d to out-port %d.", in, out);
 
-	if ((in >= (int)connectionTable.size()) || (out >= (int)connectionTable.size()))
-		opp_error("Switch index out of range (in:%d, out:%d).", in, out);
+	if ((in >= connectionTable.size()) || (out >= connectionTable.size()))
+		opp_error("Switch index out of range (in: %d, out: %d).", in, out);
 
 	ConnectionTable::iterator it = connectionTable.begin();
 	while(it != connectionTable.end())
 	{
-		if (*it == out)
+		if (*it == (int)out)
 			*it = -1;
 		it++;
 	}
 
-	connectionTable.at(in) = out;
+	connectionTable[in] = out;
 
 	printSwitch();
 }
 
-void OpticalSwitchFabric::disconnect(int in)
+void OpticalSwitchFabric::disconnect(unsigned int in)
 {
-	Enter_Method("Switching port: input %d disconnected.", in);
+	Enter_Method("Switching port: in-port %d is disconnected.", in);
 
-	if (in >= (int)connectionTable.size())
-			opp_error("Switch index out of range (in:%d, out:%d).", in);
+	if (in >= connectionTable.size())
+		opp_error("Switch index out of range (in: %d).", in);
 
-	connectionTable.at(in) = -1;
+	connectionTable[in] = -1;
 
 	printSwitch();
 }
 
 void OpticalSwitchFabric::printSwitch()
 {
+	ev << getFullName() << ": Connection Table" << endl
+	   << "input\toutput" << endl;
 	ConnectionTable::iterator it = connectionTable.begin();
 	int i = 0;
+	char buf[16];
 	while(it != connectionTable.end())
-		ev << "port " << i++ << " connect to " << *it++ << endl;
+	{
+		sprintf(buf, "%2d\t%2d", i++, *it++);
+		ev << buf << endl;
+	}
 }

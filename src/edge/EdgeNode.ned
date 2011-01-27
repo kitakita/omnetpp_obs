@@ -46,7 +46,7 @@ module EdgeNode
             @display("p=135,190");
         }
         queue[numDestinations]: MixedTimeBurstlengthBasedQueue {
-            @display("p=250,190,column,80;q=queue");
+            @display("p=250,190,column,80");
         }
         dispatcher: <dispatcherType> like BurstDispatcher {
             @display("p=365,190");

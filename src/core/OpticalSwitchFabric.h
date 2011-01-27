@@ -36,8 +36,8 @@ class OpticalSwitchFabric : public cSimpleModule
     virtual void printSwitch();
 
   public:
-    virtual void connect(int in, int out);
-    virtual void disconnect(int in);
+    virtual void connect(unsigned int in, unsigned int out);
+    virtual void disconnect(unsigned int in);
 };
 
 #endif
