@@ -180,7 +180,7 @@ void AnsyncSlottedDispatcher::handleSendingBurst(cMessage *msg)
 void AnsyncSlottedDispatcher::handleReceivedBurst(cMessage *msg)
 {
 	Burst *bst = check_and_cast<Burst *>(msg);
-	simtime_t txFinishTime = (bst->getByteLength() - bst->getTail() + bst->getRestTail()) * 8 / wdm->getDatarate(0);
+	simtime_t txFinishTime = bst->getByteLength() * 8 / wdm->getDatarate(0);
 
 	sendDelayed(msg, txFinishTime, "out");
 }

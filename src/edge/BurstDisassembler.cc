@@ -51,7 +51,7 @@ void BurstDisassembler::handleMessage(cMessage *msg)
 
 void BurstDisassembler::finish()
 {
-	if (numBursts == 0)
+	if (numBursts == 0) // avoid error
 		numBursts = 1;
 
     recordScalar("Disassembler-numBursts", numBursts);

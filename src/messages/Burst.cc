@@ -64,7 +64,7 @@ void Burst::dropHead(int dropByteLength)
 
 void Burst::dropTail(int dropByteLength)
 {
-	if (getTail() > dropByteLength)
+	if (getTail() < dropByteLength)
 		opp_error("%s try to drop tail. But dropByteLength (%d [byte]) lager than tail (%d [byte]).", getName(), dropByteLength, getTail());
 	else
 	{

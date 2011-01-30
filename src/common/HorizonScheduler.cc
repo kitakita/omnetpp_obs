@@ -119,7 +119,7 @@ ScheduleResult HorizonScheduler::trySchedule(cMessage *msg, int port, int channe
 		{
 			if (res.offset + bcp->getBursthead() >= 0)
 				res.droppedHead = -res.offset;
-			else if (res.offset + bcp->getBursthead() + bcp->getBursttail() >= 0)
+			else if (res.offset + bcp->getBursthead() + sch->tail >= 0)
 			{
 				res.droppedHead = bcp->getBursthead();
 				res.droppedTail = -res.offset - bcp->getBursthead();
@@ -146,6 +146,8 @@ ScheduleResult HorizonScheduler::trySchedule(cMessage *msg, int port, int channe
 		{
 			res.offset = bcp->getBurstArrivalTime();
 			res.channel = i;
+			res.droppedHead = 0;
+			res.droppedTail = 0;
 			return res;
 		}
 
@@ -157,6 +159,8 @@ ScheduleResult HorizonScheduler::trySchedule(cMessage *msg, int port, int channe
 			{
 				res.offset = offset;
 				res.channel = i;
+				res.droppedHead = 0;
+				res.droppedTail = 0;
 			}
 		}
 		else
@@ -168,8 +172,9 @@ ScheduleResult HorizonScheduler::trySchedule(cMessage *msg, int port, int channe
 					res.channel = i;
 					res.offset = offset;
 					res.droppedHead = -res.offset;
+					res.droppedTail = 0;
 				}
-				else if (offset + bcp->getBursthead() + bcp->getBursttail() >= 0)
+				else if (offset + bcp->getBursthead() + sch->tail >= 0)
 				{
 					res.channel = i;
 					res.offset = offset;
